@@ -549,7 +549,10 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     let qty = 1;
     const overlay = openOverlay(`
       <div class="ex-eg-modal-sheet">
-        <div class="ex-eg-close-row"><button class="ex-eg-icon-btn ex-eg-ghost close-modal">${ICONS.close}</button></div>
+        <div class="ex-eg-close-row">
+          <button type="button" class="ex-eg-share-btn" id="share-product">${ICONS.share}<span>${state.lang === 'ar' ? 'مشاركة' : 'Share'}</span></button>
+          <button class="ex-eg-icon-btn ex-eg-ghost close-modal">${ICONS.close}</button>
+        </div>
         <div class="ex-eg-modal-img"><img ${imgSrc(img)} alt="${t(p.name)}" style="${fitStyle(p.imageFit)}" data-imgload></div>
         <div class="ex-eg-modal-body">
           <h2>${newTag(p)}${t(p.name)}</h2>
@@ -583,6 +586,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
       </div>
     `);
     overlay.querySelector('.close-modal').addEventListener('click', () => overlay.remove());
+    overlay.querySelector('#share-product').addEventListener('click', () => shareProduct(p));
     wireRatingWidget(overlay, p);
     overlay.querySelectorAll('.ex-eg-variant-chip').forEach(chip => {
       chip.addEventListener('click', () => {
@@ -609,6 +613,58 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
       flashCartAdded();
       toast(state.lang === 'ar' ? 'اتضاف للعربة' : 'Added to cart', ICONS.cart);
     });
+  }
+
+  /* رابط مباشر للمنتج — نفس صيغة الـ deep link اللي بتفتح من الإشعارات (?product=ID) */
+  function productLink(p) {
+    return `${location.origin}${location.pathname}?product=${p.id}`;
+  }
+
+  /* مشاركة المنتج: Web Share API لو متاح (موبايل)، وإلا نسخ الرابط + خيار واتساب */
+  async function shareProduct(p) {
+    const ar = state.lang === 'ar';
+    const url = productLink(p);
+    const v = (p.variants || [])[0];
+    const price = v ? `${DATA.currencyCode} ${fmtPrice(discountedPrice(v.price, activeDiscount(p)))}` : '';
+    const text = [[t(p.name), price].filter(Boolean).join(' — '), tPlain(DATA.name, DATA.name)].filter(Boolean).join('\n');
+    if (navigator.share) {
+      try { await navigator.share({ title: t(p.name), text, url }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    const copied = await copyText(url);
+    const wa = `https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`;
+    const overlay = openOverlay(`
+      <div class="ex-eg-modal-sheet ex-eg-share-sheet">
+        <div class="ex-eg-sheet-title">${ar ? 'مشاركة المنتج' : 'Share product'}<button class="ex-eg-icon-btn ex-eg-ghost close-modal">${ICONS.close}</button></div>
+        <div class="ex-eg-share-body">
+          <input class="ex-eg-share-link" readonly value="${url}" dir="ltr">
+          <div class="ex-eg-share-actions">
+            <button type="button" class="ex-eg-share-act" id="share-copy">${ICONS.copy}<span>${copied ? (ar ? 'اتنسخ الرابط ✓' : 'Link copied ✓') : (ar ? 'نسخ الرابط' : 'Copy link')}</span></button>
+            <a class="ex-eg-share-act ex-eg-share-wa" href="${wa}" target="_blank" rel="noopener">${ICONS.whatsapp}<span>${ar ? 'واتساب' : 'WhatsApp'}</span></a>
+          </div>
+        </div>
+      </div>
+    `);
+    overlay.querySelector('.close-modal').addEventListener('click', () => overlay.remove());
+    overlay.querySelector('#share-copy').addEventListener('click', async () => {
+      const ok = await copyText(url);
+      overlay.querySelector('#share-copy span').textContent = ok ? (ar ? 'اتنسخ الرابط ✓' : 'Link copied ✓') : (ar ? 'انسخه يدوياً من الخانة' : 'Copy it manually');
+      if (ok) toast(ar ? 'اتنسخ رابط المنتج' : 'Product link copied');
+    });
+    const inp = overlay.querySelector('.ex-eg-share-link');
+    inp.addEventListener('focus', () => inp.select());
+  }
+
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        const ok = document.execCommand('copy'); ta.remove(); return ok;
+      } catch (e2) { return false; }
+    }
   }
 
   function flashCartAdded() {

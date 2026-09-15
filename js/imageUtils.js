@@ -123,10 +123,13 @@ export function imageFieldTemplate(id, currentUrl, label = 'الصورة', fit =
         </div>
         <div class="ex-eg-img-fit-hint">اسحب الصورة بالماوس لتحريكها داخل الإطار</div>
       </div>
-      <details class="ex-eg-img-link-details">
-        <summary>أو استخدم لينك صورة</summary>
-        <input class="ex-eg-img-link-input" id="${id}" placeholder="https://..." value="${esc(inline ? '' : (currentUrl || ''))}">
-      </details>
+      <div class="ex-eg-img-link-box">
+        <label for="${id}">أو أضف الصورة عبر رابط</label>
+        <div class="ex-eg-img-link-row">
+          <input class="ex-eg-img-link-input" id="${id}" type="url" inputmode="url" placeholder="https://... (يقبل روابط Google Drive)" value="${esc(inline ? '' : (currentUrl || ''))}">
+          <button type="button" class="ex-eg-img-paste-btn" id="${id}-paste">لصق</button>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -228,10 +231,31 @@ export function wireImageField(root, id) {
     file.click();
   });
 
-  linkInput.addEventListener('input', () => {
+  const applyLink = () => {
+    const url = toDirectImageUrl(linkInput.value.trim());
     delete wrapper.dataset.inline;
     status.textContent = '';
-    show(toDirectImageUrl(linkInput.value.trim()));
+    show(url);
+    if (!url) return;
+    /* نتأكد إن الرابط بيرجّع صورة فعلاً ونقول للمستخدم */
+    const probe = preview.querySelector('img');
+    if (!probe) return;
+    status.textContent = 'جاري التحقق من الرابط...';
+    probe.onload = () => { status.textContent = 'الصورة اتحمّلت من الرابط ✓'; };
+    probe.onerror = () => { status.textContent = 'الرابط مش بيفتح كصورة — اتأكد إنه رابط مباشر أو مشاركة عامة من Drive'; };
+  };
+  linkInput.addEventListener('input', applyLink);
+  const pasteBtn = root.querySelector(`#${id}-paste`);
+  if (pasteBtn) pasteBtn.addEventListener('click', async () => {
+    try {
+      const txt = (await navigator.clipboard.readText() || '').trim();
+      if (!txt) { status.textContent = 'الحافظة فاضية — انسخ رابط الصورة الأول'; return; }
+      linkInput.value = txt;
+      applyLink();
+    } catch (e) {
+      status.textContent = 'المتصفح منع قراءة الحافظة — الصق الرابط يدوياً في الخانة';
+      linkInput.focus();
+    }
   });
 
   file.addEventListener('change', async () => {

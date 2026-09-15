@@ -294,13 +294,13 @@ def handle_telegram_decisions(db, notifier, state):
                 })
                 notifier.tg_call("sendMessage", {
                     "chat_id": chat_id,
-                    "text": "🥩 تمام! إشعارات علي 24 اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.",
+                    "text": "🥩 تمام! إشعارات منوعات الرحمان اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.",
                 })
                 log(f"عميل ربط تليجرام: {sub_id[:8]}")
             else:
                 notifier.tg_call("sendMessage", {
                     "chat_id": chat_id,
-                    "text": f"أهلاً بيك في علي 24 🥩\nرقم الشات بتاعك: {chat_id}",
+                    "text": f"أهلاً بيك في منوعات الرحمان 🥩\nرقم الشات بتاعك: {chat_id}",
                 })
             continue
 
@@ -478,14 +478,14 @@ def main():
                     state["broadcasts"].append(bid)
                     continue
                 sent, total = notifier.broadcast({
-                    "title": b.get("title") or "علي 24",
+                    "title": b.get("title") or "منوعات الرحمان",
                     "body": b.get("body") or "",
                     "icon": b.get("image") or "/assets/logo.png",
                     "url": f"/index.html?product={b['productId']}" if b.get("productId") else "/index.html",
                     "tag": f"bc-{bid}",
                 })
                 # نفس الإشعار بيتبعت كرسالة تليجرام لكل اللي رابطين البوت
-                tg_text = f"🥩 *{b.get('title') or 'علي 24'}*\n{b.get('body') or ''}"
+                tg_text = f"🥩 *{b.get('title') or 'منوعات الرحمان'}*\n{b.get('body') or ''}"
                 tg_sent = 0
                 for sid, s in (db.get("subscribers") or {}).items():
                     if isinstance(s, dict) and s.get("telegramChatId"):

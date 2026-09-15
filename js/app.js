@@ -13,7 +13,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
 
 (function () {
   'use strict';
-  let DATA = { name: 'علي 24', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=3' };
+  let DATA = { name: 'منوعات الرحمان', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=3' };
   let SETTINGS = { branches: [], payments: null, governorates: null };
   let FIRST_PRODUCT_ID = null;
   let RATINGS = {};   // { [productId]: { avg, count } }
@@ -50,7 +50,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     if (DATA.surfaceColor) root.setProperty('--surface', DATA.surfaceColor);
     root.setProperty('--primary-soft', mix(DATA.primaryColor || '#1565C0', 0.1));
     root.setProperty('--primary-dark', shade(DATA.primaryColor || '#1565C0', -0.12));
-    document.title = `${DATA.name || 'علي 24'}`;
+    document.title = `${DATA.name || 'منوعات الرحمان'}`;
     state.activeCat = DATA.categories[0] ? DATA.categories[0].id : null;
     state.visibleCategoryCount = 1;
     FIRST_PRODUCT_ID = DATA.categories[0]?.products?.[0]?.id ?? null;
@@ -58,7 +58,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
   }
 
   function updateSearchMetadata() {
-    const storeName = tPlain(DATA.name, DATA.name) || 'علي 24';
+    const storeName = tPlain(DATA.name, DATA.name) || 'منوعات الرحمان';
     const description = `${storeName} - تصفح المنتجات المتاحة واطلب بسهولة.`;
     document.title = storeName;
     const descriptionTag = document.querySelector('meta[name="description"]');
@@ -67,12 +67,12 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: storeName,
-      url: 'https://alih-5212b.web.app/',
+      url: 'https://monawaat.web.app/',
       description,
       hasPart: (DATA.categories || []).flatMap(category => (category.products || []).map(product => ({
         '@type': 'Product',
         name: tPlain(product.name, 'منتج'),
-        image: product.image || DATA.logo || 'https://alih-5212b.web.app/assets/logo.png',
+        image: product.image || DATA.logo || 'https://monawaat.web.app/assets/logo.png',
         offers: (product.variants || []).map(variant => ({
           '@type': 'Offer', price: variant.price, priceCurrency: DATA.currencyCode || 'EGP', availability: 'https://schema.org/InStock'
         }))

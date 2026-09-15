@@ -1,9 +1,9 @@
-# نسخة المحل الجديد — `alih-5212b`
+# منوعات الرحمان — `alih-5212b`
 
 نسخة مستقلة تماماً: مشروع فايربيز مختلف، رابط مختلف، بيانات فاضية.
 
-- الموقع: https://alih-5212b.web.app  (وعلى فيرسل: https://ali-sigma-nine.vercel.app)
-- اللوحة: https://alih-5212b.web.app/dashboard/
+- الموقع: https://monawaat.web.app  (وعلى فيرسل: https://monawaat.vercel.app)
+- اللوحة: https://monawaat.web.app/dashboard/
 - النشر: دوس مرتين على `نشر.bat` (أو `node seo/publish.js`) — بينشر على `alih-5212b` بس.
 
 ## أول تشغيل (خطوات لمرة واحدة)

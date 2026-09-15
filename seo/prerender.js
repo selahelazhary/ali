@@ -20,7 +20,7 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const DB = 'https://alih-5212b-default-rtdb.firebaseio.com';
-const SITE = 'https://alih-5212b.web.app';
+const SITE = 'https://monawaat.web.app';
 
 const MARK_START = '<!-- SEO:START -->';
 const MARK_END = '<!-- SEO:END -->';
@@ -95,8 +95,8 @@ async function main() {
   const menu = menuRaw || {};
   const defaults = readDefaults();
 
-  const name = ar(menu.name, defaults.name || 'علي 24');
-  const nameEn = en(menu.name, defaults.name || 'علي 24');
+  const name = ar(menu.name, defaults.name || 'منوعات الرحمان');
+  const nameEn = en(menu.name, defaults.name || 'منوعات الرحمان');
   const cats = (Array.isArray(menu.categories) ? menu.categories : []).filter(Boolean);
   const products = cats.flatMap(c => (Array.isArray(c.products) ? c.products : []).filter(Boolean)
     .map(p => ({ ...p, catAr: ar(c.name), catEn: en(c.name) })));

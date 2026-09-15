@@ -59,8 +59,8 @@ self.addEventListener('fetch', (e) => {
 
 self.addEventListener('push', (e) => {
   let data = {};
-  try { data = e.data ? e.data.json() : {}; } catch (err) { data = { title: e.data ? e.data.text() : 'علي 24' }; }
-  const title = data.title || 'علي 24';
+  try { data = e.data ? e.data.json() : {}; } catch (err) { data = { title: e.data ? e.data.text() : 'منوعات الرحمان' }; }
+  const title = data.title || 'منوعات الرحمان';
   e.waitUntil(self.registration.showNotification(title, {
     body: data.body || '',
     icon: data.icon || '/assets/logo.png',

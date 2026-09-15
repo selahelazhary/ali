@@ -225,7 +225,7 @@ function renderShell() {
     </div>
     <div class="ex-eg-shell">
       <aside class="ex-eg-sidebar" id="sidebar">
-        <div class="ex-eg-brand"><img src="../assets/logo.png?v=3" alt=""><span>علي 24</span></div>
+        <div class="ex-eg-brand"><img src="../assets/logo.png?v=3" alt=""><span>منوعات الرحمان</span></div>
         <div class="ex-eg-who">${ICONS.shield}<span>${currentProfile.name || currentProfile.email}</span><small>${currentProfile.role === 'owner' ? 'مالك' : 'موظف'}</small></div>
         <nav id="nav-list"></nav>
         <div class="ex-eg-sidebar-footer">

@@ -284,11 +284,11 @@ export async function pollTelegramDecisions() {
       if (payload) {
         try {
           await update(ref(db, `subscribers/${payload}`), { telegramChatId: chatId, linked: true, createdAt: Date.now(), lastSeen: Date.now() });
-          await tgCall('sendMessage', { chat_id: chatId, text: '🥩 تمام! إشعارات علي 24 اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.' });
+          await tgCall('sendMessage', { chat_id: chatId, text: '🥩 تمام! إشعارات منوعات الرحمان اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.' });
           handled++;
         } catch (e) { /* الاشتراك مش موجود */ }
       } else {
-        await tgCall('sendMessage', { chat_id: chatId, text: `أهلاً بيك في علي 24 🥩\nرقم الشات بتاعك: ${chatId}` });
+        await tgCall('sendMessage', { chat_id: chatId, text: `أهلاً بيك في منوعات الرحمان 🥩\nرقم الشات بتاعك: ${chatId}` });
       }
       continue;
     }

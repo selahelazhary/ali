@@ -11,8 +11,8 @@ const { execSync } = require('child_process');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const SITE = 'https://alih-5212b.web.app';
-/* مشروع فيرسل المرتبط (الرابط الثابت: https://ali-sigma-nine.vercel.app) */
+const SITE = 'https://monawaat.web.app';
+/* مشروع فيرسل المرتبط (الرابط الثابت: https://monawaat.vercel.app) */
 const VERCEL_LINK = { projectId: 'prj_ZFbOXtVQW4gREBcjiX0iR5GMAA2C', orgId: 'team_W3asu5A49RSFY9ukf8TdRD5x', projectName: 'ali' };
 const run = (cmd) => execSync(cmd, { cwd: ROOT, stdio: 'inherit', shell: true });
 

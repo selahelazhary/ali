@@ -54,7 +54,7 @@ function productPage({ nm, desc, pr, currency, cat, url, name, id, ld, crumbs })
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1565C0">
+<meta name="theme-color" content="#0A3A7D">
 <title>${e(nm)} — ${e(name)}</title>
 <meta name="description" content="${e(desc.slice(0, 160))}">
 <link rel="canonical" href="${url}">

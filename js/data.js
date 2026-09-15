@@ -9,7 +9,7 @@ window.MENU_DATA = {
   "homeBackgroundBase": "assets/home-bg-base.webp",
   "homeBgHasLogo": false,
   "bannerAnimation": "fade",
-  "primaryColor": "#1565C0",
+  "primaryColor": "#0A3A7D",
   "backgroundColor": "#FFFFFF",
   "textColor": "#0F2740",
   "buttonTextColor": "#FFFFFF",

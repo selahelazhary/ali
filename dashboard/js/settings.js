@@ -53,7 +53,7 @@ export async function renderIdentity(container) {
       <label class="ex-eg-pay-config-row"><span class="ex-eg-pc-name">الخلفية نفسها فيها اللوجو (اخفي لوجو الصفحة)</span>
         <input type="checkbox" id="s-homebg-logo" ${menu.homeBgHasLogo !== false ? 'checked' : ''}><span class="ex-eg-switch"></span></label>
       <div class="ex-eg-row-2">
-        <div class="ex-eg-field"><label>اللون الأساسي</label><input type="color" id="s-primary" value="${esc(menu.primaryColor || '#1565C0')}"></div>
+        <div class="ex-eg-field"><label>اللون الأساسي</label><input type="color" id="s-primary" value="${esc(menu.primaryColor || '#0A3A7D')}"></div>
         <div class="ex-eg-field"><label>لون الخلفية</label><input type="color" id="s-bg" value="${esc(menu.backgroundColor || '#ffffff')}"></div>
       </div>
       <div class="ex-eg-row-2">

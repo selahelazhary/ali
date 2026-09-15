@@ -13,7 +13,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
 
 (function () {
   'use strict';
-  let DATA = { name: 'منوعات الرحمان', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=3' };
+  let DATA = { name: 'منوعات الرحمان', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4' };
   let SETTINGS = { branches: [], payments: null, governorates: null };
   let FIRST_PRODUCT_ID = null;
   let RATINGS = {};   // { [productId]: { avg, count } }
@@ -30,7 +30,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
   };
 
   function applyData(d) {
-    if (d) DATA = Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=3' }, d);
+    if (d) DATA = Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4' }, d);
     /* تطبيع الأقسام:
        - قسم من غير id بيكسر التبويبات والقائمة ⇒ نديله رقم ثابت حسب ترتيبه.
        - فايربيز بيشيل المصفوفات الفاضية، فقسم لسه مفيهوش منتجات بيرجع من
@@ -43,13 +43,13 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
       c.products = c.products.filter(Boolean);
     });
     const root = document.documentElement.style;
-    root.setProperty('--primary', DATA.primaryColor || '#1565C0');
+    root.setProperty('--primary', DATA.primaryColor || '#0A3A7D');
     root.setProperty('--bg', DATA.backgroundColor || '#ffffff');
     root.setProperty('--text', DATA.textColor || '#0F2740');
     root.setProperty('--btn-text', DATA.buttonTextColor || '#ffffff');
     if (DATA.surfaceColor) root.setProperty('--surface', DATA.surfaceColor);
-    root.setProperty('--primary-soft', mix(DATA.primaryColor || '#1565C0', 0.1));
-    root.setProperty('--primary-dark', shade(DATA.primaryColor || '#1565C0', -0.12));
+    root.setProperty('--primary-soft', mix(DATA.primaryColor || '#0A3A7D', 0.1));
+    root.setProperty('--primary-dark', shade(DATA.primaryColor || '#0A3A7D', -0.12));
     document.title = `${DATA.name || 'منوعات الرحمان'}`;
     state.activeCat = DATA.categories[0] ? DATA.categories[0].id : null;
     state.visibleCategoryCount = 1;
@@ -249,7 +249,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
         </div>
         ${bgHasLogo ? '' : `
         <div class="ex-eg-logo-wrap">
-            <img ${imgSrc(DATA.logo, 'assets/logo.png?v=3')} alt="${t(DATA.name, DATA.name)}">
+            <img ${imgSrc(DATA.logo, 'assets/logo.png?v=4')} alt="${t(DATA.name, DATA.name)}">
           ${DATA.isRestaurantNameDisplayedOnHomePage ? `<div class="ex-eg-restaurant-name">${t(DATA.name, DATA.name)}</div>` : ''}
         </div>`}
         <button class="ex-eg-main-menu-btn ex-eg-pressable" id="go-menu">${T.menu}</button>
@@ -386,7 +386,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
           <div class="ex-eg-menu-loading-head"><h2>${T.title}</h2><p>${T.sub}</p></div>
           <div class="ex-eg-skeleton-grid ex-eg-menu-skeleton-grid">${skeletonCards}</div>
         ` : `
-          <img src="${DATA.logo || 'assets/logo.png?v=3'}" alt="">
+          <img src="${DATA.logo || 'assets/logo.png?v=4'}" alt="">
           <h2>${T.title}</h2>
           <p>${T.sub}</p>
         `}
@@ -733,7 +733,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
       : { settings: 'Settings', lang: 'Language', notif: 'Notifications', inbox: 'Open inbox' };
     overlay.innerHTML = `
       <div class="ex-eg-drawer">
-        <div class="ex-eg-drawer-logo"><img ${imgSrc(DATA.logo, 'assets/logo.png?v=3')} alt="${t(DATA.name, DATA.name)}"></div>
+        <div class="ex-eg-drawer-logo"><img ${imgSrc(DATA.logo, 'assets/logo.png?v=4')} alt="${t(DATA.name, DATA.name)}"></div>
         <h3>${state.lang === 'ar' ? 'الأقسام' : 'Categories'}</h3>
         <ul>
           ${DATA.categories.map(c => `
@@ -1033,7 +1033,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     onValue(ref(db, 'menu'), (snap) => {
       if (!snap.exists()) return;
       if (!menuSyncedOnce) { menuSyncedOnce = true; syncCartPrices(snap.val(), (p, v) => discountedPrice(v.price, activeDiscount(p))); return; }
-      applyData(Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=3' }, snap.val()));
+      applyData(Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4' }, snap.val()));
       syncCartPrices(DATA, (p, v) => discountedPrice(v.price, activeDiscount(p)));
       // مانقطعش على العميل وهو بيكمّل طلب
       if (!document.querySelector('.cart-overlay')) render();

@@ -118,7 +118,7 @@ async function applyBrand() {
 function renderDeviceUnverified() {
   root.innerHTML = `
     <div class="ex-eg-auth-screen"><div class="ex-eg-auth-card">
-      <img class="ex-eg-auth-logo" src="../assets/logo.png?v=3" alt="">
+      <img class="ex-eg-auth-logo" src="../assets/logo.png?v=4" alt="">
       <h1>تعذّر التحقق من الجهاز</h1>
       <p>مقدرناش نتأكد إن الجهاز ده مصرّح له يفتح اللوحة — غالباً الاتصال ضعيف.<br>
          لأمان حسابك مش هنفتح اللوحة من غير التحقق ده.</p>
@@ -135,7 +135,7 @@ function renderWrongDevice(info, user) {
   const paint = (pending) => {
     root.innerHTML = `
       <div class="ex-eg-auth-screen"><div class="ex-eg-auth-card">
-        <img class="ex-eg-auth-logo" src="../assets/logo.png?v=3" alt="">
+        <img class="ex-eg-auth-logo" src="../assets/logo.png?v=4" alt="">
         <h1>${pending ? 'في انتظار الموافقة' : 'جهاز غير مصرّح له'}</h1>
         <p>${pending
           ? 'تم إرسال طلب نقل الحساب لهذا الجهاز. بمجرد موافقة المالك هيفتح تلقائياً.'
@@ -225,7 +225,7 @@ function renderShell() {
     </div>
     <div class="ex-eg-shell">
       <aside class="ex-eg-sidebar" id="sidebar">
-        <div class="ex-eg-brand"><img src="../assets/logo.png?v=3" alt=""><span>منوعات الرحمان</span></div>
+        <div class="ex-eg-brand"><img src="../assets/logo.png?v=4" alt=""><span>منوعات الرحمان</span></div>
         <div class="ex-eg-who">${ICONS.shield}<span>${currentProfile.name || currentProfile.email}</span><small>${currentProfile.role === 'owner' ? 'مالك' : 'موظف'}</small></div>
         <nav id="nav-list"></nav>
         <div class="ex-eg-sidebar-footer">

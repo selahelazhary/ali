@@ -13,7 +13,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
 
 (function () {
   'use strict';
-  let DATA = { name: 'براد أونلاين', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=3' };
+  let DATA = { name: 'علي 24', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=3' };
   let SETTINGS = { branches: [], payments: null, governorates: null };
   let FIRST_PRODUCT_ID = null;
   let RATINGS = {};   // { [productId]: { avg, count } }
@@ -50,7 +50,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     if (DATA.surfaceColor) root.setProperty('--surface', DATA.surfaceColor);
     root.setProperty('--primary-soft', mix(DATA.primaryColor || '#1565C0', 0.1));
     root.setProperty('--primary-dark', shade(DATA.primaryColor || '#1565C0', -0.12));
-    document.title = `${DATA.name || 'براد أونلاين'}`;
+    document.title = `${DATA.name || 'علي 24'}`;
     state.activeCat = DATA.categories[0] ? DATA.categories[0].id : null;
     state.visibleCategoryCount = 1;
     FIRST_PRODUCT_ID = DATA.categories[0]?.products?.[0]?.id ?? null;
@@ -58,7 +58,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
   }
 
   function updateSearchMetadata() {
-    const storeName = tPlain(DATA.name, DATA.name) || 'براد أونلاين';
+    const storeName = tPlain(DATA.name, DATA.name) || 'علي 24';
     const description = `${storeName} - تصفح المنتجات المتاحة واطلب بسهولة.`;
     document.title = storeName;
     const descriptionTag = document.querySelector('meta[name="description"]');

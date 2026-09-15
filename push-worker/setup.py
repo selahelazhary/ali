@@ -46,7 +46,7 @@ def main():
             existing = json.load(fh)
         print("config.json موجود بالفعل — هيتم تحديثه.\n")
 
-    print("=== إعداد سيرفر الإشعارات (براد أونلاين) ===\n")
+    print("=== إعداد سيرفر الإشعارات (علي 24) ===\n")
     print("محتاج بيانات دخول حساب المالك في لوحة التحكم (بتتخزن على جهازك فقط).")
     email = input(f"الإيميل [{existing.get('email', '')}]: ").strip() or existing.get("email", "")
     password = getpass.getpass("الباسورد (مش هيظهر وانت بتكتب): ").strip() or existing.get("password", "")

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /functions/
+Sitemap: https://alih-5212b.web.app/sitemap.xml

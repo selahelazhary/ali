@@ -1,0 +1,12 @@
+# تبعيات ومخرجات بناء
+node_modules/
+dist/
+.firebase/
+p/
+*.log
+
+# أسرار — عمرها ما تترفع
+push-worker/config.json
+push-worker/state.json
+functions/.env*
+.env*

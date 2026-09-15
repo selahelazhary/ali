@@ -110,7 +110,7 @@ async function main() {
   const catNames = cats.map(c => ar(c.name)).filter(Boolean);
   const description = products.length
     ? `${name} — اطلب أونلاين من ${products.length} منتج طازة: ${catNames.slice(0, 6).join('، ')}. توصيل وطلب من الموبايل مباشرة.`
-    : `${name} — براد أونلاين — لحوم ومجمدات. اطلب أونلاين: ${catNames.slice(0, 8).join('، ')}${catNames.length > 8 ? ' وغيرها' : ''}. توصيل سريع وطلب من الموبايل.`;
+    : `${name} — لحوم وفراخ ومجمدات طازجة. اطلب أونلاين:${catNames.slice(0, 8).join('، ')}${catNames.length > 8 ? ' وغيرها' : ''}. توصيل سريع وطلب من الموبايل.`;
 
   const keywords = [name, 'لحوم', 'مجمدات', 'براد', 'فراخ', 'جمبري', 'سمك', 'طلب أونلاين', 'توصيل', 'frozen food', 'meat', 'order online']
     .concat(catNames.slice(0, 12)).join('، ');
@@ -226,7 +226,7 @@ async function main() {
   html = strip(html);
   while (html.includes(MARK_START)) html = strip(html);
 
-  html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(name)} — اطلب أونلاين | براد أونلاين — لحوم ومجمدات</title>`);
+  html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(name)} — لحوم ومجمدات | اطلب أونلاين</title>`);
   html = html.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(description)}">`);
   html = html.replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${esc(name)} — اطلب أونلاين">`);
   html = html.replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${esc(description)}">`);

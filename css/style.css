@@ -100,6 +100,39 @@ svg{width:1em;height:1em;}
 .ex-eg-home .ex-eg-lang-switch{position:absolute;top:20px;inset-inline-end:20px;}
 .ex-eg-home .ex-eg-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;animation:fadeUp .6s var(--ease) both;}
 .ex-eg-home .ex-eg-logo-wrap img{width:170px;height:170px;object-fit:contain;animation:floaty 5s ease-in-out infinite;}
+/* ===== اللوجو طبقتين: النص بيظهر في مكانه، والعربة بتدخل من جنب الشاشة وتستقر ===== */
+.ex-eg-home .ex-eg-logo-stack{position:relative;width:170px;height:170px;animation:floaty 5s ease-in-out 2.4s infinite;}
+.ex-eg-home .ex-eg-logo-stack img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;animation:none;}
+.ex-eg-home .ex-eg-logo-stack .ex-eg-logo-text{animation:logoTextIn .9s var(--ease-soft, ease-out) .95s both;}
+/* العربة: بتيجي طايرة من الشمال بسرعة، تتجاوز مكانها شوية، ترجع وتتنطط نطّة خفيفة وتستقر — زي عربة بتفرمل */
+.ex-eg-home .ex-eg-logo-stack .ex-eg-logo-cart{
+  transform-origin:50% 90%;
+  animation:cartRide 1.7s cubic-bezier(.22,.8,.3,1) .15s both,
+            cartSettle .55s ease-out 1.85s both;
+  will-change:transform,filter;
+}
+@keyframes logoTextIn{
+  from{ opacity:0; transform:scale(.72) translateY(12px); filter:blur(6px); }
+  60% { opacity:1; filter:blur(0); }
+  to  { opacity:1; transform:scale(1) translateY(0); }
+}
+@keyframes cartRide{
+  0%  { transform:translate3d(-130vw,10%,0) rotate(-14deg) scale(1.15); filter:blur(3px); opacity:0; }
+  8%  { opacity:1; }
+  58% { transform:translate3d(9%,-4%,0) rotate(7deg) scale(1.06); filter:blur(0); }
+  74% { transform:translate3d(-3%,1.5%,0) rotate(-4deg) scale(1.02); }
+  88% { transform:translate3d(1.2%,-.6%,0) rotate(1.5deg) scale(1); }
+  100%{ transform:translate3d(0,0,0) rotate(0) scale(1); }
+}
+@keyframes cartSettle{
+  0%  { transform:translate3d(0,0,0) scaleY(1); }
+  35% { transform:translate3d(0,1.5%,0) scaleY(.96); }
+  70% { transform:translate3d(0,-.8%,0) scaleY(1.02); }
+  100%{ transform:translate3d(0,0,0) scaleY(1); }
+}
+@media (prefers-reduced-motion:reduce){
+  .ex-eg-home .ex-eg-logo-stack,.ex-eg-home .ex-eg-logo-stack .ex-eg-logo-text,.ex-eg-home .ex-eg-logo-stack .ex-eg-logo-cart{animation:none;}
+}
 .ex-eg-home .ex-eg-restaurant-name{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--text);letter-spacing:.2px;}
 .ex-eg-home .ex-eg-main-menu-btn{
   width:100%;max-width:320px;background:var(--primary);color:var(--btn-text);border:none;border-radius:999px;

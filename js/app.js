@@ -30,7 +30,8 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
   };
 
   function applyData(d) {
-    if (d) DATA = Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4' }, d);
+    /* طبقتي اللوجو (العربة/النص) ملفات ثابتة في الموقع مش في القاعدة */
+    if (d) DATA = Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4', logoCart: 'assets/logo-cart.png?v=1', logoText: 'assets/logo-text.png?v=1' }, d);
     /* تطبيع الأقسام:
        - قسم من غير id بيكسر التبويبات والقائمة ⇒ نديله رقم ثابت حسب ترتيبه.
        - فايربيز بيشيل المصفوفات الفاضية، فقسم لسه مفيهوش منتجات بيرجع من
@@ -234,6 +235,9 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     const animateImage = !isVideoBg && !!bg && DATA.homeBgAnimate !== false && !reduceMotion;
     const stillBg = isVideoBg ? poster : bg;
     const bgHasLogo = bg && DATA.homeBgHasLogo !== false;
+    /* اللوجو الرسمي بيتعرض طبقتين: العربة بتدخل من جنب الشاشة وتستقر فوق النص.
+       بيشتغل بس مع لوجو الموقع الافتراضي — لو المالك غيّر اللوجو من اللوحة بنرجع لصورة واحدة. */
+    const splitLogo = !!(DATA.logoCart && DATA.logoText && (!DATA.logo || /^assets\/logo\.png(\?|$)/.test(String(DATA.logo))));
     return `
       <div class="ex-eg-home ${bg ? 'ex-eg-has-bg' : ''} ${animateImage ? 'ex-eg-bg-animated' : ''}" ${stillBg && !animateImage ? `style="background-image:url('${stillBg}')"` : ''}>
         ${showVideo ? `<video class="ex-eg-home-video" autoplay muted loop playsinline preload="auto" poster="${poster}" aria-hidden="true" tabindex="-1"><source src="${bg}" type="video/${/\.webm/i.test(bgRaw) ? 'webm' : 'mp4'}"></video>` : ''}
@@ -249,7 +253,12 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
         </div>
         ${bgHasLogo ? '' : `
         <div class="ex-eg-logo-wrap">
-            <img ${imgSrc(DATA.logo, 'assets/logo.png?v=4')} alt="${t(DATA.name, DATA.name)}">
+            ${splitLogo ? `
+            <div class="ex-eg-logo-stack" role="img" aria-label="${t(DATA.name, DATA.name)}">
+              <img class="ex-eg-logo-text" src="${safeUrl(DATA.logoText)}" alt="" decoding="async">
+              <img class="ex-eg-logo-cart" src="${safeUrl(DATA.logoCart)}" alt="" decoding="async">
+            </div>` : `
+            <img ${imgSrc(DATA.logo, 'assets/logo.png?v=4')} alt="${t(DATA.name, DATA.name)}">`}
           ${DATA.isRestaurantNameDisplayedOnHomePage ? `<div class="ex-eg-restaurant-name">${t(DATA.name, DATA.name)}</div>` : ''}
         </div>`}
         <button class="ex-eg-main-menu-btn ex-eg-pressable" id="go-menu">${T.menu}</button>

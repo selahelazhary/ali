@@ -40,7 +40,7 @@ export function defaultGovernorateSettings() {
   return out;
 }
 
-/* scope = مين يشوف طريقة الدفع دي: both = الكل، inside = طلبات جوّه المخبز،
+/* scope = مين يشوف طريقة الدفع دي: both = الكل، inside = طلبات جوّه المحل،
    outside = طلبات برّه (توصيل/استلام). requireProof = العميل لازم يرفع صورة التحويل. */
 export const DEFAULT_PAYMENTS = {
   cod: { enabled: true, scope: 'both' },
@@ -51,9 +51,9 @@ export const DEFAULT_PAYMENTS = {
 };
 
 export const PAYMENT_SCOPES = [
-  { id: 'both', ar: 'جوّه وبرّه المخبز' },
-  { id: 'inside', ar: 'جوّه المخبز بس' },
-  { id: 'outside', ar: 'برّه المخبز بس' },
+  { id: 'both', ar: 'جوّه وبرّه المحل' },
+  { id: 'inside', ar: 'جوّه المحل بس' },
+  { id: 'outside', ar: 'برّه المحل بس' },
 ];
 
 export function paymentInScope(cfg, orderType) {

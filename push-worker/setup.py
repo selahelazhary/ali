@@ -1,4 +1,4 @@
-"""Daily Bake worker — one-time setup.
+"""Freezer worker — one-time setup.
 
 Generates the VAPID key pair used for Web Push (no Google Cloud, no service
 account, no paid plan) and writes config.json. Run once:
@@ -46,7 +46,7 @@ def main():
             existing = json.load(fh)
         print("config.json موجود بالفعل — هيتم تحديثه.\n")
 
-    print("=== إعداد سيرفر الإشعارات (Daily Bake) ===\n")
+    print("=== إعداد سيرفر الإشعارات (براد أونلاين) ===\n")
     print("محتاج بيانات دخول حساب المالك في لوحة التحكم (بتتخزن على جهازك فقط).")
     email = input(f"الإيميل [{existing.get('email', '')}]: ").strip() or existing.get("email", "")
     password = getpass.getpass("الباسورد (مش هيظهر وانت بتكتب): ").strip() or existing.get("password", "")
@@ -68,7 +68,7 @@ def main():
         "vapid": vapid,
         "vapidSubject": existing.get("vapidSubject", "mailto:" + email),
         "pollSeconds": existing.get("pollSeconds", 5),
-        "drive": existing.get("drive", {"enabled": False, "folderName": "Daily Bake Images"}),
+        "drive": existing.get("drive", {"enabled": False, "folderName": "Freezer Images"}),
     }
     with open(CONFIG, "w", encoding="utf-8") as fh:
         json.dump(cfg, fh, ensure_ascii=False, indent=2)

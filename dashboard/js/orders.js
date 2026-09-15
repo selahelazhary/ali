@@ -35,7 +35,7 @@ export function renderOrders(container, { profile } = {}) {
     </div>
     <div class="ex-eg-tabs-row" id="type-tabs">
       <button class="ex-eg-tab-pill ex-eg-active" data-type="all">كل الأنواع</button>
-      <button class="ex-eg-tab-pill" data-type="inside">${ICONS.table} داخل المخبز</button>
+      <button class="ex-eg-tab-pill" data-type="inside">${ICONS.table} داخل المحل</button>
       <button class="ex-eg-tab-pill" data-type="pickup">${ICONS.bag} استلام</button>
       <button class="ex-eg-tab-pill" data-type="delivery">${ICONS.bike} توصيل</button>
     </div>

@@ -5,12 +5,15 @@ window.MENU_DATA = {
   "name": "",
   "logo": "assets/logo.png",
   "banners": [],
+  "homeBackground": "assets/home-bg-frozen.webp",
+  "homeBackgroundBase": "assets/home-bg-base.webp",
+  "homeBgHasLogo": false,
   "bannerAnimation": "fade",
-  "primaryColor": "#F26722",
+  "primaryColor": "#1565C0",
   "backgroundColor": "#FFFFFF",
-  "textColor": "#2A1B12",
+  "textColor": "#0F2740",
   "buttonTextColor": "#FFFFFF",
-  "surfaceColor": "#FFF8F3",
+  "surfaceColor": "#F4F9FE",
   "languages": [
     "ar",
     "en"

@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 cd /d "%~dp0"
-title Daily Bake - تثبيت المتطلبات
+title Freezer - تثبيت المتطلبات
 echo جاري تثبيت مكتبات بايثون...
 py -m pip install -r requirements.txt || python -m pip install -r requirements.txt
 echo.

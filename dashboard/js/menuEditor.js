@@ -480,7 +480,7 @@ export async function renderMenuEditor(container) {
         if (f.notifications && f.notifyNewProducts) {
           const price = (newP.variants[0] || {}).price;
           try {
-            await sendBroadcast({ type: 'newProduct', title: `جديد: ${newP.name.ar} 🥐`, body: price ? `${menu.currencyCode || 'EGP'} ${price} — جرّبه دلوقتي` : 'جرّبه دلوقتي', productId: newP.id, image: newP.image || null });
+            await sendBroadcast({ type: 'newProduct', title: `جديد: ${newP.name.ar} 🥩`, body: price ? `${menu.currencyCode || 'EGP'} ${price} — جرّبه دلوقتي` : 'جرّبه دلوقتي', productId: newP.id, image: newP.image || null });
             toast('اتبعت إشعار المنتج الجديد للمشتركين', 'success');
           } catch (e) { /* broadcast is best-effort */ }
         }

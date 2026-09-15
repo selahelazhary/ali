@@ -76,7 +76,7 @@ function decisionKeyboard(orderId) {
         /* متابعة الحالة من نفس الرسالة من غير ما تفتح اللوحة */
         [
           { text: '👨‍🍳 جاري التحضير', callback_data: `st:preparing:${orderId}` },
-          { text: '🥐 جاهز', callback_data: `st:ready:${orderId}` },
+          { text: '🥩 جاهز', callback_data: `st:ready:${orderId}` },
         ],
         [
           { text: '📦 تم التسليم', callback_data: `st:completed:${orderId}` },
@@ -88,9 +88,9 @@ function decisionKeyboard(orderId) {
 
 function formatOrderMessage(order, orderId) {
   const L = [];
-  L.push(`🥐 *طلب جديد #${(orderId || '').slice(-6).toUpperCase()}*`);
+  L.push(`🥩 *طلب جديد #${(orderId || '').slice(-6).toUpperCase()}*`);
   if (order.orderType === 'inside') {
-    L.push(`🍽 داخل المخبز — طاولة ${order.tableNumber || '-'}${order.branchName ? ` (${order.branchName})` : ''}`);
+    L.push(`🍽 داخل المحل — طاولة ${order.tableNumber || '-'}${order.branchName ? ` (${order.branchName})` : ''}`);
   } else if (order.deliveryMethod === 'delivery') {
     L.push(`🛵 توصيل — ${order.governorateName || ''}`);
     if (order.address) L.push(`📍 ${order.address}`);
@@ -188,7 +188,7 @@ export async function broadcastTelegram({ title, body = '' }) {
   const chats = Object.values(subs).map(s => s && s.telegramChatId).filter(Boolean);
   let sent = 0;
   for (const chat of chats) {
-    const r = await tgCall('sendMessage', { chat_id: chat, text: `🥐 *${title}*\n${body}`, parse_mode: 'Markdown' });
+    const r = await tgCall('sendMessage', { chat_id: chat, text: `🥩 *${title}*\n${body}`, parse_mode: 'Markdown' });
     if (r && r.ok) sent++;
   }
   return sent;
@@ -284,11 +284,11 @@ export async function pollTelegramDecisions() {
       if (payload) {
         try {
           await update(ref(db, `subscribers/${payload}`), { telegramChatId: chatId, linked: true, createdAt: Date.now(), lastSeen: Date.now() });
-          await tgCall('sendMessage', { chat_id: chatId, text: '🥐 تمام! إشعارات Bakery اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.' });
+          await tgCall('sendMessage', { chat_id: chatId, text: '🥩 تمام! إشعارات براد أونلاين اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.' });
           handled++;
         } catch (e) { /* الاشتراك مش موجود */ }
       } else {
-        await tgCall('sendMessage', { chat_id: chatId, text: `أهلاً بيك في Bakery 🥐\nرقم الشات بتاعك: ${chatId}` });
+        await tgCall('sendMessage', { chat_id: chatId, text: `أهلاً بيك في براد أونلاين 🥩\nرقم الشات بتاعك: ${chatId}` });
       }
       continue;
     }
@@ -301,7 +301,7 @@ export async function pollTelegramDecisions() {
     const orderId = action === 'st' ? parts.slice(2).join(':') : parts.slice(1).join(':');
 
     const STATUS_LABEL = {
-      preparing: '👨‍🍳 جاري التحضير', ready: '🥐 الطلب جاهز',
+      preparing: '👨‍🍳 جاري التحضير', ready: '🥩 الطلب جاهز',
       completed: '📦 تم التسليم', cancelled: '❌ تم رفض الطلب',
     };
 

@@ -13,7 +13,7 @@ export function renderBranches(container) {
   container.innerHTML = `
     <div class="ex-eg-card">
       <div class="ex-eg-card-head">
-        <div><h3>الفروع</h3><p class="ex-eg-hint">الفروع بتظهر للعميل في "معلومات المخبز" وبيختار منها عند الاستلام.</p></div>
+        <div><h3>الفروع</h3><p class="ex-eg-hint">الفروع بتظهر للعميل في "معلومات المحل" وبيختار منها عند الاستلام.</p></div>
         <button class="ex-eg-btn" id="add-branch">${ICONS.plus} فرع جديد</button>
       </div>
       ${filterBarHtml({ id: 'branches', placeholder: 'ابحث باسم الفرع أو العنوان أو التليفون...' })}

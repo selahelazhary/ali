@@ -32,7 +32,7 @@ const STR = {
         items: [
           ['مفيش تتبّع إعلاني', 'مفيش Google Analytics ولا بكسل فيسبوك ولا أي طرف تالت.', ''],
           ['مفيش بيع بيانات', 'بياناتك مش بتتباع ولا بتتشارك مع أي حد.', ''],
-          ['بيانات الطلب', 'اسمك وتليفونك وعنوانك بيتبعتوا للمخبز عشان يجهّز طلبك بس.', ''],
+          ['بيانات الطلب', 'اسمك وتليفونك وعنوانك بيتبعتوا للمحل عشان يجهّز طلبك بس.', ''],
         ],
       },
       {
@@ -66,7 +66,7 @@ const STR = {
         items: [
           ['No ad tracking', 'No Google Analytics, no Facebook pixel, no third parties.', ''],
           ['No data selling', 'Your data is never sold or shared.', ''],
-          ['Order details', 'Your name, phone and address go to the bakery only, to fulfil your order.', ''],
+          ['Order details', 'Your name, phone and address go to the store only, to fulfil your order.', ''],
         ],
       },
       {

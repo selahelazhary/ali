@@ -1,4 +1,4 @@
-/* النسخ الاحتياطي — تنزيل نسخة كاملة من بيانات المخبز كملف JSON،
+/* النسخ الاحتياطي — تنزيل نسخة كاملة من بيانات المحل كملف JSON،
    ورفع نسخة قديمة لاسترجاعها. القسم للمالك بس. */
 import { ICONS } from '../../js/icons.js';
 import { db, ref, get, set, update, push, remove, auth } from '../../js/firebase-config.js';
@@ -65,7 +65,7 @@ export function renderBackup(container, { profile } = {}) {
     <div class="ex-eg-card ex-eg-narrow">
       <div class="ex-eg-card-head"><div>
         <h3>${ICONS.upload} نسخة احتياطية</h3>
-        <p class="ex-eg-hint">نزّل نسخة من بيانات المخبز على جهازك، وارفعها تاني في أي وقت لو حصل أي حاجة. النسخة ملف JSON واحد تقدر تحفظه على الدرايف أو الإيميل.</p>
+        <p class="ex-eg-hint">نزّل نسخة من بيانات المحل على جهازك، وارفعها تاني في أي وقت لو حصل أي حاجة. النسخة ملف JSON واحد تقدر تحفظه على الدرايف أو الإيميل.</p>
       </div></div>
 
       <h4 class="ex-eg-backup-h">${ICONS.upload} تنزيل نسخة جديدة</h4>

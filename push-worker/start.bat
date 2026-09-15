@@ -1,12 +1,14 @@
 @echo off
 chcp 65001 >nul
 cd /d "%~dp0"
-title Daily Bake - سيرفر الإشعارات
+title Freezer - سيرفر الإشعارات
 
 if not exist config.json (
-  echo أول تشغيل — هنعمل الإعداد.
-  py setup.py || python setup.py
-  if errorlevel 1 pause & exit /b 1
+  echo مفيش config.json هنا.
+  echo نزّله من لوحة التحكم: الأدمن ^> وركر الإشعارات ^> تنزيل config.json
+  echo وحطه في المجلد ده جنب worker.py، بعدين شغّل start.bat تاني.
+  pause
+  exit /b 1
 )
 
 :run

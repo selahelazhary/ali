@@ -6,9 +6,9 @@
    جافاسكربت لكنه بيأجّل الفهرسة أيام، وباقي الزواحف مابتنفّذش أصلاً.
 
    الحل: قبل كل نشر بنقرا المنيو من فايربيز ونكتب:
-     • محتوى حقيقي (اسم المخبز، الأقسام، المنتجات، الأسعار) جوّه index.html
+     • محتوى حقيقي (اسم المحل، الأقسام، المنتجات، الأسعار) جوّه index.html
      • وسوم وصف وعنوان مبنية على البيانات الفعلية
-     • بيانات منظّمة JSON-LD (مخبز + منيو + منتجات)
+     • بيانات منظّمة JSON-LD (محل + منيو + منتجات)
      • sitemap.xml بكل الأقسام
    والجافاسكربت بيستبدل المحتوى ده بنفسه وقت التشغيل — يعني اللي بيشوفه
    الزائر هو نفسه اللي بيشوفه جوجل (مفيش تمويه).
@@ -54,7 +54,7 @@ function productPage({ nm, desc, pr, currency, cat, url, name, id, ld, crumbs })
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#F26722">
+<meta name="theme-color" content="#1565C0">
 <title>${e(nm)} — ${e(name)}</title>
 <meta name="description" content="${e(desc.slice(0, 160))}">
 <link rel="canonical" href="${url}">
@@ -95,8 +95,8 @@ async function main() {
   const menu = menuRaw || {};
   const defaults = readDefaults();
 
-  const name = ar(menu.name, defaults.name || 'Bakery');
-  const nameEn = en(menu.name, defaults.name || 'Bakery');
+  const name = ar(menu.name, defaults.name || 'براد أونلاين');
+  const nameEn = en(menu.name, defaults.name || 'براد أونلاين');
   const cats = (Array.isArray(menu.categories) ? menu.categories : []).filter(Boolean);
   const products = cats.flatMap(c => (Array.isArray(c.products) ? c.products : []).filter(Boolean)
     .map(p => ({ ...p, catAr: ar(c.name), catEn: en(c.name) })));
@@ -110,9 +110,9 @@ async function main() {
   const catNames = cats.map(c => ar(c.name)).filter(Boolean);
   const description = products.length
     ? `${name} — اطلب أونلاين من ${products.length} منتج طازة: ${catNames.slice(0, 6).join('، ')}. توصيل وطلب من الموبايل مباشرة.`
-    : `${name} — مخبز وحلواني. اطلب أونلاين: ${catNames.slice(0, 8).join('، ')}${catNames.length > 8 ? ' وغيرها' : ''}. توصيل سريع وطلب من الموبايل.`;
+    : `${name} — براد أونلاين — لحوم ومجمدات. اطلب أونلاين: ${catNames.slice(0, 8).join('، ')}${catNames.length > 8 ? ' وغيرها' : ''}. توصيل سريع وطلب من الموبايل.`;
 
-  const keywords = [name, 'مخبز', 'حلواني', 'طلب أونلاين', 'توصيل', 'bakery', 'order online']
+  const keywords = [name, 'لحوم', 'مجمدات', 'براد', 'فراخ', 'جمبري', 'سمك', 'طلب أونلاين', 'توصيل', 'frozen food', 'meat', 'order online']
     .concat(catNames.slice(0, 12)).join('، ');
 
   /* ---------- محتوى مقروء للزواحف ---------- */
@@ -145,13 +145,12 @@ async function main() {
   /* ---------- بيانات منظّمة ---------- */
   const bakery = {
     '@context': 'https://schema.org',
-    '@type': 'Bakery',
+    '@type': 'GroceryStore',
     name: nameEn,
     alternateName: name,
     url: SITE,
     image: `${SITE}/assets/logo.png`,
     description,
-    servesCuisine: 'Bakery',
     priceRange: '$$',
     currenciesAccepted: currency,
     paymentAccepted: 'Cash, Vodafone Cash, InstaPay',
@@ -227,7 +226,7 @@ async function main() {
   html = strip(html);
   while (html.includes(MARK_START)) html = strip(html);
 
-  html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(name)} — اطلب أونلاين | مخبز وحلواني</title>`);
+  html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(name)} — اطلب أونلاين | براد أونلاين — لحوم ومجمدات</title>`);
   html = html.replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${esc(description)}">`);
   html = html.replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${esc(name)} — اطلب أونلاين">`);
   html = html.replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${esc(description)}">`);

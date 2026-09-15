@@ -23,7 +23,7 @@ SCOPES = ["https://www.googleapis.com/auth/drive.file"]
 
 
 class DriveUploader:
-    def __init__(self, base_dir, folder_name="Daily Bake Images"):
+    def __init__(self, base_dir, folder_name="Freezer Images"):
         self.base_dir = base_dir
         self.folder_name = folder_name
         self.token_path = os.path.join(base_dir, "token.json")

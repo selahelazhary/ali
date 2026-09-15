@@ -1,6 +1,6 @@
-/* Bakery service worker — offline shell, Web Push delivery, notification clicks.
+/* Freezer service worker — offline shell, Web Push delivery, notification clicks.
    Push payloads are sent by the Python worker using VAPID (no FCM). */
-const CACHE = 'bakery-shell-v39';
+const CACHE = 'bakery-shell-v40';
 /* ملاحظة: Hosting شغّال عليه cleanUrls، يعني /index.html بيتحوّل لـ / —
    فبنخزّن الجذر './' بس عشان مانخزّنش رد فيه تحويل. */
 const SHELL = [
@@ -59,8 +59,8 @@ self.addEventListener('fetch', (e) => {
 
 self.addEventListener('push', (e) => {
   let data = {};
-  try { data = e.data ? e.data.json() : {}; } catch (err) { data = { title: e.data ? e.data.text() : 'Bakery' }; }
-  const title = data.title || 'Bakery';
+  try { data = e.data ? e.data.json() : {}; } catch (err) { data = { title: e.data ? e.data.text() : 'براد أونلاين' }; }
+  const title = data.title || 'براد أونلاين';
   e.waitUntil(self.registration.showNotification(title, {
     body: data.body || '',
     icon: data.icon || '/assets/logo.png',

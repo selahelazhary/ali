@@ -32,9 +32,9 @@ export async function renderIdentity(container) {
   const menu = await readMenu();
   container.innerHTML = `
     <div class="ex-eg-card ex-eg-narrow">
-      <div class="ex-eg-card-head"><div><h3>${ICONS.storefront} هوية المخبز</h3><p class="ex-eg-hint">الاسم واللوجو والألوان اللي بتظهر للعملاء.</p></div></div>
+      <div class="ex-eg-card-head"><div><h3>${ICONS.storefront} هوية المحل</h3><p class="ex-eg-hint">الاسم واللوجو والألوان اللي بتظهر للعملاء.</p></div></div>
       <div class="ex-eg-row-2">
-        <div class="ex-eg-field"><label>اسم المخبز</label><input id="s-name" value="${esc(menu.name || '')}"></div>
+        <div class="ex-eg-field"><label>اسم المحل</label><input id="s-name" value="${esc(menu.name || '')}"></div>
         <div class="ex-eg-field"><label>العملة</label><input id="s-currency" value="${esc(menu.currencyCode || 'EGP')}"></div>
       </div>
       ${imageFieldTemplate('s-logo', menu.logo, 'اللوجو', menu.logoFit)}
@@ -53,11 +53,11 @@ export async function renderIdentity(container) {
       <label class="ex-eg-pay-config-row"><span class="ex-eg-pc-name">الخلفية نفسها فيها اللوجو (اخفي لوجو الصفحة)</span>
         <input type="checkbox" id="s-homebg-logo" ${menu.homeBgHasLogo !== false ? 'checked' : ''}><span class="ex-eg-switch"></span></label>
       <div class="ex-eg-row-2">
-        <div class="ex-eg-field"><label>اللون الأساسي</label><input type="color" id="s-primary" value="${esc(menu.primaryColor || '#F26722')}"></div>
+        <div class="ex-eg-field"><label>اللون الأساسي</label><input type="color" id="s-primary" value="${esc(menu.primaryColor || '#1565C0')}"></div>
         <div class="ex-eg-field"><label>لون الخلفية</label><input type="color" id="s-bg" value="${esc(menu.backgroundColor || '#ffffff')}"></div>
       </div>
       <div class="ex-eg-row-2">
-        <div class="ex-eg-field"><label>لون النصوص</label><input type="color" id="s-text" value="${esc(menu.textColor || '#2A1B12')}"></div>
+        <div class="ex-eg-field"><label>لون النصوص</label><input type="color" id="s-text" value="${esc(menu.textColor || '#0F2740')}"></div>
         <div class="ex-eg-field"><label>لون نص الأزرار</label><input type="color" id="s-btntext" value="${esc(menu.buttonTextColor || '#ffffff')}"></div>
       </div>
       <div class="ex-eg-row-2">
@@ -178,7 +178,7 @@ export async function renderContact(container) {
   const menu = await readMenu();
   container.innerHTML = `
     <div class="ex-eg-card ex-eg-narrow">
-      <div class="ex-eg-card-head"><div><h3>${ICONS.phone} التواصل والعنوان</h3><p class="ex-eg-hint">بتظهر للعميل في صفحة "معلومات المخبز".</p></div></div>
+      <div class="ex-eg-card-head"><div><h3>${ICONS.phone} التواصل والعنوان</h3><p class="ex-eg-hint">بتظهر للعميل في صفحة "معلومات المحل".</p></div></div>
       <div class="ex-eg-field"><label>العنوان</label><textarea id="s-address" rows="2">${menu.address || ''}</textarea></div>
       <div class="ex-eg-field"><label>مواعيد العمل</label><textarea id="s-hours" rows="2">${menu.openingHours || ''}</textarea></div>
       <div class="ex-eg-row-2">
@@ -210,7 +210,7 @@ export async function renderPayments(container) {
   const row = (id, icon, name, checked) => `
     <label class="ex-eg-pay-config-row"><span class="ex-eg-pay-logo-sm">${icon}</span><span class="ex-eg-pc-name">${name}</span>
       <input type="checkbox" id="${id}" ${checked ? 'checked' : ''}><span class="ex-eg-switch"></span></label>`;
-  /* لمين تظهر طريقة الدفع دي: طلبات جوّه المخبز ولا برّه ولا الاتنين */
+  /* لمين تظهر طريقة الدفع دي: طلبات جوّه المحل ولا برّه ولا الاتنين */
   const scopeRow = (id, cfg) => `
     <div class="ex-eg-field ex-eg-indent"><label>تظهر لعملاء</label>
       <select id="${id}">${PAYMENT_SCOPES.map(s => `<option value="${esc(s.id)}" ${((cfg && cfg.scope) || 'both') === s.id ? 'selected' : ''}>${s.ar}</option>`).join('')}</select>
@@ -305,13 +305,13 @@ export async function renderFeatures(container) {
       ${fr('f-notif', ICONS.bell, 'الإشعارات للعملاء', 'زرار "فعّل الإشعارات" وصندوق الإشعارات في الموقع', features.notifications)}
       ${fr('f-notif-new', ICONS.star, 'إشعار تلقائي عند إضافة منتج جديد', 'لكل المشتركين، بصورة المنتج', features.notifyNewProducts, true)}
       ${fr('f-notif-disc', ICONS.receipt, 'إشعار تلقائي عند إضافة خصم', 'لكل المشتركين', features.notifyDiscounts, true)}
-      ${fr('f-pwa', ICONS.grid, 'تثبيت الموقع كتطبيق', 'اقتراح تثبيت Bakery على شاشة العميل + يشتغل بدون إنترنت', features.pwaInstall)}
+      ${fr('f-pwa', ICONS.grid, 'تثبيت الموقع كتطبيق', 'اقتراح تثبيت براد أونلاين على شاشة العميل + يشتغل بدون إنترنت', features.pwaInstall)}
       ${fr('f-cookies', ICONS.cookie, 'شريط ملفات تعريف الارتباط (الكوكيز)', 'إشعار للعميل بالبيانات المحفوظة على جهازه + صفحة تفاصيل', features.cookieBanner !== false)}
       ${fr('f-devbind', ICONS.shield, 'اربط كل حساب أدمن بمتصفح واحد', 'حماية زيادة للموظفين — بس لو مسحت بيانات المتصفح هتحتاج توافق على الجهاز من جديد', features.deviceBinding === true)}
       <button class="ex-eg-btn" id="save-features">${ICONS.check} حفظ</button>
       <hr style="border:none;border-top:1px solid var(--border);margin:18px 0">
       <h3 style="font-size:14px;margin:0 0 10px">${ICONS.send} إرسال إشعار يدوي</h3>
-      <div class="ex-eg-field"><label>العنوان</label><input id="bc-title" placeholder="مثال: خبز بلدي طازة وصل 🥖"></div>
+      <div class="ex-eg-field"><label>العنوان</label><input id="bc-title" placeholder="مثال: لحمة مفرومة طازة وصل 🥖"></div>
       <div class="ex-eg-field"><label>النص (اختياري)</label><textarea id="bc-body" rows="2" placeholder="اطلب دلوقتي من المنيو"></textarea></div>
       <button class="ex-eg-btn ex-eg-ghost" id="send-bc">${ICONS.send} إرسال لكل المشتركين</button>
     </div>`;

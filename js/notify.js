@@ -19,7 +19,7 @@ const STR = {
   },
   en: {
     inbox: 'Notifications', empty: 'No notifications yet', enable: 'Enable notifications', enableSub: 'Get every new product and discount first', enabled: 'Notifications enabled ✓',
-    denied: 'Notifications are blocked in your browser settings', install: 'Install the app', installSub: 'Open Bakery from your home screen like any app', installBtn: 'Install', later: 'Later',
+    denied: 'Notifications are blocked in your browser settings', install: 'Install the app', installSub: 'Open the store from your home screen like any app', installBtn: 'Install', later: 'Later',
     iosHint: 'On iPhone: tap Share then "Add to Home Screen"', newProduct: 'New product', discount: 'Discount', custom: 'Notice', markRead: 'Mark all as read',
     tgBtn: 'Enable on Telegram', tgSub: 'Get your order updates, new products and offers as Telegram messages', tgLinked: 'Telegram linked ✓', tgWaiting: 'Finish in Telegram', tgWaitingSub: 'Press Start in the bot and come back',
   },

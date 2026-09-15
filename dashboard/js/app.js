@@ -13,6 +13,7 @@ import { renderFeedback } from './feedback.js';
 import { renderAdmins } from './admins.js';
 import { renderDiscounts } from './discounts.js';
 import { renderBackup } from './backup.js';
+import { renderWorker } from './worker.js';
 import { showStuck, bootProgress } from './boot-guard.js';
 import { esc } from '../../js/escape.js';
 
@@ -35,7 +36,7 @@ const SECTIONS = [
   { key: 'branches', group: 'catalog', label: 'الفروع', icon: ICONS.storefront, render: renderBranches, perm: 'branches' },
   { key: 'customers', group: 'customers', label: 'العملاء', icon: ICONS.users, render: renderCustomers, perm: 'customers' },
   { key: 'feedback', group: 'customers', label: 'آراء العملاء', icon: ICONS.chat, render: renderFeedback, perm: 'feedback' },
-  { key: 'identity', group: 'settings', label: 'هوية المخبز', icon: ICONS.storefront, render: renderIdentity, perm: 'settings.identity' },
+  { key: 'identity', group: 'settings', label: 'هوية المحل', icon: ICONS.storefront, render: renderIdentity, perm: 'settings.identity' },
   { key: 'banners', group: 'settings', label: 'صور البانر', icon: ICONS.images, render: renderBanners, perm: 'settings.banners' },
   { key: 'payments', group: 'settings', label: 'بوابات الدفع', icon: ICONS.cash, render: renderPayments, perm: 'settings.payments' },
   { key: 'governorates', group: 'settings', label: 'محافظات التوصيل', icon: ICONS.truck, render: renderGovernorates, perm: 'settings.governorates' },
@@ -44,6 +45,7 @@ const SECTIONS = [
   { key: 'telegram', group: 'settings', label: 'بوت تليجرام', icon: ICONS.send, render: renderTelegram, perm: 'settings.telegram' },
   { key: 'admins', group: 'admin', label: 'الأدمنز والصلاحيات', icon: ICONS.shield, render: renderAdmins, perm: 'owner' },
   { key: 'backup', group: 'admin', label: 'نسخة احتياطية', icon: ICONS.upload, render: renderBackup, perm: 'owner' },
+  { key: 'worker', group: 'admin', label: 'وركر الإشعارات', icon: ICONS.bell, render: renderWorker, perm: 'owner' },
 ];
 
 let currentProfile = null;
@@ -116,7 +118,7 @@ async function applyBrand() {
 function renderDeviceUnverified() {
   root.innerHTML = `
     <div class="ex-eg-auth-screen"><div class="ex-eg-auth-card">
-      <img class="ex-eg-auth-logo" src="../assets/logo.png?v=2" alt="">
+      <img class="ex-eg-auth-logo" src="../assets/logo.png?v=3" alt="">
       <h1>تعذّر التحقق من الجهاز</h1>
       <p>مقدرناش نتأكد إن الجهاز ده مصرّح له يفتح اللوحة — غالباً الاتصال ضعيف.<br>
          لأمان حسابك مش هنفتح اللوحة من غير التحقق ده.</p>
@@ -133,7 +135,7 @@ function renderWrongDevice(info, user) {
   const paint = (pending) => {
     root.innerHTML = `
       <div class="ex-eg-auth-screen"><div class="ex-eg-auth-card">
-        <img class="ex-eg-auth-logo" src="../assets/logo.png?v=2" alt="">
+        <img class="ex-eg-auth-logo" src="../assets/logo.png?v=3" alt="">
         <h1>${pending ? 'في انتظار الموافقة' : 'جهاز غير مصرّح له'}</h1>
         <p>${pending
           ? 'تم إرسال طلب نقل الحساب لهذا الجهاز. بمجرد موافقة المالك هيفتح تلقائياً.'
@@ -223,7 +225,7 @@ function renderShell() {
     </div>
     <div class="ex-eg-shell">
       <aside class="ex-eg-sidebar" id="sidebar">
-        <div class="ex-eg-brand"><img src="../assets/logo.png?v=2" alt=""><span>Bakery</span></div>
+        <div class="ex-eg-brand"><img src="../assets/logo.png?v=3" alt=""><span>براد أونلاين</span></div>
         <div class="ex-eg-who">${ICONS.shield}<span>${currentProfile.name || currentProfile.email}</span><small>${currentProfile.role === 'owner' ? 'مالك' : 'موظف'}</small></div>
         <nav id="nav-list"></nav>
         <div class="ex-eg-sidebar-footer">

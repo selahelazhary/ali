@@ -10,3 +10,9 @@ push-worker/config.json
 push-worker/state.json
 functions/.env*
 .env*
+
+# مخرجات بايثون
+__pycache__/
+*.pyc
+
+.vercel

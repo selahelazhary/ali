@@ -84,7 +84,7 @@ function rememberOrder(id, summary) {
 const STR = {
   ar: {
     cart: 'عربة الطلبات', empty: 'العربة فاضية', total: 'الإجمالي', subtotal: 'المجموع', deliveryFee: 'رسوم التوصيل', checkout: 'إتمام الطلب',
-    orderType: 'نوع الطلب', inside: 'داخل المخبز (طاولة)', outside: 'خارج المخبز',
+    orderType: 'نوع الطلب', inside: 'استلام من المحل', outside: 'توصيل للبيت',
     tableNumber: 'رقم الطاولة', pickup: 'استلام من الفرع', delivery: 'توصيل للعنوان', branch: 'اختار الفرع', branchFrom: 'الفرع اللي هيجهّز طلبك',
     governorate: 'المحافظة', chooseGov: 'اختار المحافظة', noGov: 'التوصيل مش متاح حالياً في محافظات تانية',
     name: 'الاسم', phone: 'رقم التليفون', address: 'العنوان بالتفصيل', notes: 'ملاحظات (اختياري)',
@@ -96,11 +96,11 @@ const STR = {
     success: 'تم استلام طلبك بنجاح!', orderNo: 'رقم الطلب', successSub: 'هنبلغك أول ما نبدأ في التحضير',
     continueShopping: 'متابعة الطلب', track: 'تتبع الطلب', myOrders: 'طلباتي', enableNotif: 'فعّل الإشعارات', notifHint: 'عشان يوصلك تنبيه لما يبدأ تحضير طلبك',
     notifOn: 'الإشعارات مفعّلة ✓', stepNew: 'تم استلام الطلب', stepPreparing: 'بدأنا في التحضير', stepReady: 'الطلب جاهز', stepCompleted: 'تم التسليم', stepCancelled: 'تم إلغاء الطلب',
-    prepNotifTitle: 'بدأنا نجهز طلبك 🥐', prepNotifBody: 'طلبك رقم', readyNotifTitle: 'طلبك جاهز ✅', noOrders: 'مفيش طلبات على الجهاز ده',
+    prepNotifTitle: 'بدأنا نجهز طلبك 🥩', prepNotifBody: 'طلبك رقم', readyNotifTitle: 'طلبك جاهز ✅', noOrders: 'مفيش طلبات على الجهاز ده',
   },
   en: {
     cart: 'Your Cart', empty: 'Your cart is empty', total: 'Total', subtotal: 'Subtotal', deliveryFee: 'Delivery fee', checkout: 'Checkout',
-    orderType: 'Order Type', inside: 'Dine-in (Table)', outside: 'Outside the bakery',
+    orderType: 'Order Type', inside: 'Pickup from store', outside: 'Home delivery',
     tableNumber: 'Table Number', pickup: 'Pickup from branch', delivery: 'Delivery to address', branch: 'Choose a branch', branchFrom: 'Branch preparing your order',
     governorate: 'Governorate', chooseGov: 'Choose governorate', noGov: 'Delivery is not available in other governorates yet',
     name: 'Name', phone: 'Phone Number', address: 'Full Address', notes: 'Notes (optional)',
@@ -112,7 +112,7 @@ const STR = {
     success: 'Order placed successfully!', orderNo: 'Order #', successSub: "We'll notify you once we start preparing it",
     continueShopping: 'Continue browsing', track: 'Track order', myOrders: 'My orders', enableNotif: 'Enable notifications', notifHint: 'Get alerted when we start preparing your order',
     notifOn: 'Notifications enabled ✓', stepNew: 'Order received', stepPreparing: 'Preparing your order', stepReady: 'Order is ready', stepCompleted: 'Delivered', stepCancelled: 'Order cancelled',
-    prepNotifTitle: 'We started preparing your order 🥐', prepNotifBody: 'Order #', readyNotifTitle: 'Your order is ready ✅', noOrders: 'No orders on this device yet',
+    prepNotifTitle: 'We started preparing your order 🥩', prepNotifBody: 'Order #', readyNotifTitle: 'Your order is ready ✅', noOrders: 'No orders on this device yet',
   },
 };
 
@@ -195,7 +195,7 @@ function renderCheckout(ctx) {
     payments.etisalatCash && payments.etisalatCash.enabled ? { id: 'etisalatCash', icon: ICONS.etisalatCash, label: S.etisalat, sub: S.etisalatSub, payTo: payments.etisalatCash.number, cfg: payments.etisalatCash } : null,
     payments.instapay && payments.instapay.enabled ? { id: 'instapay', icon: ICONS.instapay, label: S.instapay, sub: S.instapaySub, payTo: payments.instapay.address, link: payments.instapay.link, cfg: payments.instapay } : null,
   ].filter(Boolean);
-  /* كل بوابة ممكن تتحدد من الأدمن: تظهر لطلبات جوّه المخبز ولا برّه ولا الاتنين */
+  /* كل بوابة ممكن تتحدد من الأدمن: تظهر لطلبات جوّه المحل ولا برّه ولا الاتنين */
   const optionsFor = (type) => {
     const list = allPayOptions.filter(o => paymentInScope(o.cfg, type));
     return list.length ? list : [codOption];
@@ -701,7 +701,7 @@ export function openMyOrders(ctx) {
 }
 
 /* Keeps this device's recent orders in sync and fires a browser notification
-   when the bakery starts preparing / finishes an order. */
+   when the store starts preparing / finishes an order. */
 const watched = new Set();
 export function watchMyOrders(ctx) {
   const S = STR[ctx.lang] || STR.ar;

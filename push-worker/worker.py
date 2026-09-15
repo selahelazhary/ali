@@ -1,4 +1,4 @@
-"""Daily Bake background worker.
+"""Freezer background worker.
 
 Does everything that would otherwise need a paid backend, from this machine:
   • Web Push to customers (new products, discounts, order status) — standard
@@ -32,7 +32,7 @@ CONFIG = os.path.join(HERE, "config.json")
 STATE = os.path.join(HERE, "state.json")
 
 STATUS_AR = {
-    "preparing": "بدأنا نجهز طلبك 🥐",
+    "preparing": "بدأنا نجهز طلبك 🥩",
     "ready": "طلبك جاهز ✅",
     "completed": "تم تسليم طلبك — بالهنا والشفا 🧡",
     "cancelled": "تم إلغاء طلبك ❌",
@@ -216,9 +216,9 @@ class Notifier:
 
 def order_text(order, oid):
     name = lambda o: (o or {}).get("ar") or (o or {}).get("en") or "" if isinstance(o, dict) else (o or "")
-    lines = [f"🥐 *طلب جديد #{oid[-6:].upper()}*"]
+    lines = [f"🥩 *طلب جديد #{oid[-6:].upper()}*"]
     if order.get("orderType") == "inside":
-        lines.append(f"🍽 داخل المخبز — طاولة {order.get('tableNumber') or '-'}")
+        lines.append(f"🍽 داخل المحل — طاولة {order.get('tableNumber') or '-'}")
     elif order.get("deliveryMethod") == "delivery":
         lines.append(f"🛵 توصيل — {order.get('governorateName') or ''}")
         if order.get("address"):
@@ -243,7 +243,7 @@ def order_text(order, oid):
 
 STATUS_BUTTONS = {
     "preparing": "👨‍🍳 جاري التحضير",
-    "ready": "🥐 جاهز",
+    "ready": "🥩 جاهز",
     "completed": "📦 تم التسليم",
     "cancelled": "❌ تم رفض الطلب",
 }
@@ -258,7 +258,7 @@ def decision_keyboard(oid):
         ],
         [
             {"text": "👨‍🍳 جاري التحضير", "callback_data": f"st:preparing:{oid}"},
-            {"text": "🥐 جاهز", "callback_data": f"st:ready:{oid}"},
+            {"text": "🥩 جاهز", "callback_data": f"st:ready:{oid}"},
         ],
         [
             {"text": "📦 تم التسليم", "callback_data": f"st:completed:{oid}"},
@@ -294,13 +294,13 @@ def handle_telegram_decisions(db, notifier, state):
                 })
                 notifier.tg_call("sendMessage", {
                     "chat_id": chat_id,
-                    "text": "🥐 تمام! إشعارات Daily Bake اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.",
+                    "text": "🥩 تمام! إشعارات براد أونلاين اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.",
                 })
                 log(f"عميل ربط تليجرام: {sub_id[:8]}")
             else:
                 notifier.tg_call("sendMessage", {
                     "chat_id": chat_id,
-                    "text": f"أهلاً بيك في Daily Bake 🥐\nرقم الشات بتاعك: {chat_id}",
+                    "text": f"أهلاً بيك في براد أونلاين 🥩\nرقم الشات بتاعك: {chat_id}",
                 })
             continue
 
@@ -382,7 +382,7 @@ def _clear_buttons(notifier, cq, label):
 def main():
     cfg = load_json(CONFIG, None)
     if not cfg:
-        raise SystemExit("مفيش config.json — شغّل الأول:  py setup.py")
+        raise SystemExit("مفيش config.json — نزّله من اللوحة: الأدمن ← وركر الإشعارات، وحطه جنب worker.py")
 
     db = Db(cfg)
     notifier = Notifier(cfg, db)
@@ -406,7 +406,7 @@ def main():
     if (cfg.get("drive") or {}).get("enabled"):
         try:
             from drive_upload import DriveUploader
-            drive = DriveUploader(HERE, cfg["drive"].get("folderName", "Daily Bake Images"))
+            drive = DriveUploader(HERE, cfg["drive"].get("folderName", "Freezer Images"))
             log("رفع الصور على Drive مفعّل ✓")
         except Exception as e:
             log(f"Drive متوقف: {e}")
@@ -478,14 +478,14 @@ def main():
                     state["broadcasts"].append(bid)
                     continue
                 sent, total = notifier.broadcast({
-                    "title": b.get("title") or "Daily Bake",
+                    "title": b.get("title") or "براد أونلاين",
                     "body": b.get("body") or "",
                     "icon": b.get("image") or "/assets/logo.png",
                     "url": f"/index.html?product={b['productId']}" if b.get("productId") else "/index.html",
                     "tag": f"bc-{bid}",
                 })
                 # نفس الإشعار بيتبعت كرسالة تليجرام لكل اللي رابطين البوت
-                tg_text = f"🥐 *{b.get('title') or 'Daily Bake'}*\n{b.get('body') or ''}"
+                tg_text = f"🥩 *{b.get('title') or 'براد أونلاين'}*\n{b.get('body') or ''}"
                 tg_sent = 0
                 for sid, s in (db.get("subscribers") or {}).items():
                     if isinstance(s, dict) and s.get("telegramChatId"):

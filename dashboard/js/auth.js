@@ -13,7 +13,7 @@ export const PERMISSIONS = [
   { key: 'branches', label: 'الفروع' },
   { key: 'customers', label: 'العملاء' },
   { key: 'feedback', label: 'آراء العملاء' },
-  { key: 'settings_identity', label: 'هوية المخبز' },
+  { key: 'settings_identity', label: 'هوية المحل' },
   { key: 'settings_banners', label: 'صور البانر' },
   { key: 'settings_payments', label: 'بوابات الدفع' },
   { key: 'settings_governorates', label: 'محافظات التوصيل' },

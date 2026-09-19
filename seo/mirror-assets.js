@@ -29,7 +29,24 @@ async function ids(base) {
   return Object.keys((await res.json()) || {});
 }
 
+/* القواعد بتتظبط مرة واحدة: قراءة عامة للصور، وكتابة **إنشاء بس** — يعني
+   الصورة تتكتب مرة ومتتغيّرش ولا تتمسح أبداً، وبحد أقصى للحجم. بعد كده
+   اللوحة بتكتب النسخة التانية لوحدها وقت رفع أي صورة. */
+function deployRules() {
+  const file = path.join(__dirname, '..', 'mirror-rules.json');
+  const cfg = path.join(os.tmpdir(), `mirror-firebase-${Date.now()}.json`);
+  fs.writeFileSync(cfg, JSON.stringify({ database: { rules: file.split(path.sep).join('/') } }), 'utf8');
+  execFileSync('firebase', ['deploy', '--only', 'database', '--project', MIRROR, '--config', cfg],
+    { stdio: 'inherit', shell: true });
+  fs.unlinkSync(cfg);
+}
+
 (async () => {
+  if (apply) {
+    console.log('بنظبط قواعد المرآة...');
+    deployRules();
+    console.log('');
+  }
   const [here, there] = await Promise.all([ids(PRIMARY_URL), ids(MIRROR_URL)]);
   const missing = here.filter(id => !there.includes(id));
   const extra = there.filter(id => !here.includes(id));

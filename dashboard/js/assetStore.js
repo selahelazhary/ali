@@ -5,6 +5,23 @@ import { db, ref, set, get } from '../../js/firebase-config.js';
 import { isAssetRef } from '../../js/assets.js';
 import { ASSET_MAX_CHARS } from '../../js/imageUtils.js';
 
+/* مرآة الصور على مشروع فايربيز تاني — الموقع بيقسّم قراءة الصور على
+   الاتنين فسقف التحميل المجاني بيتضاعف. بنكتب النسخة التانية هنا وقت الرفع
+   عشان مايبقاش في أي خطوة يدوية.
+   القواعد هناك بتسمح بالإنشاء بس (‎!data.exists()‎) وبصورة واحدة لكل بصمة،
+   يعني مفيش استبدال ولا مسح. ولو الكتابة فشلت مفيش مشكلة خالص: الموقع
+   بيرجع للمصدر الأساسي تلقائياً. */
+const ASSET_MIRROR = 'https://mdhj-d3cdb-default-rtdb.firebaseio.com';
+
+function mirrorPut(id, dataUrl) {
+  if (!ASSET_MIRROR) return;
+  fetch(`${ASSET_MIRROR}/assets/${encodeURIComponent(id)}.json`, {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(dataUrl),
+  }).catch(() => { /* المرآة اختيارية */ });
+}
+
 async function sha1Hex(text) {
   const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(text));
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -23,6 +40,7 @@ export async function publishImage(value) {
   }
   const id = (await sha1Hex(v)).slice(0, 16);
   const slot = ref(db, `assets/${id}`);
+  mirrorPut(id, v);            // نسخة تانية لتوزيع الضغط — مابنستناهاش
   let exists = false;
   try { exists = (await get(slot)).exists(); } catch (e) { exists = false; }
   if (!exists) {

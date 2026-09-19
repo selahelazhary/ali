@@ -1,0 +1,16 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "assets": {
+      ".read": true,
+
+      "$id": {
+        ".write": "!data.exists()",
+
+        ".validate": "$id.matches(/^[0-9a-f]{8,40}$/) && newData.isString() && newData.val().beginsWith('data:image/') && newData.val().length <= 900000"
+      }
+    }
+  }
+}

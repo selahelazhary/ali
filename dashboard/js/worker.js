@@ -91,24 +91,6 @@ export async function renderWorker(container) {
         <p class="ex-eg-hint">الملف فيه باسورد الحساب ومفاتيح الإشعارات — خليه على جهازك بس ومتبعتوش لحد.</p>
       </div>
 
-      <div class="ex-eg-worker-steps" id="w-cloud" hidden>
-        <h4>أو شغّله على النت (من غير ما تسيب جهازك مفتوح)</h4>
-        <ol>
-          <li>افتح <b dir="ltr">vercel.com</b> ← المشروع ← Settings ← Environment Variables ← Production.</li>
-          <li>ضيف متغيّر اسمه <b dir="ltr">WORKER_CONFIG</b> وقيمته السطر ده:</li>
-        </ol>
-        <div class="ex-eg-pay-info-box" style="word-break:break-all;font-size:11.5px;direction:ltr;text-align:left" id="w-cloud-json"></div>
-        <div class="ex-eg-modal-close-row" style="justify-content:flex-start">
-          <button type="button" class="ex-eg-btn ex-eg-sm" id="w-copy-json">${ICONS.copy || '⧉'} نسخ السطر</button>
-        </div>
-        <ol start="3">
-          <li>اعمل <b>Redeploy</b> للمشروع عشان المتغيّر يشتغل.</li>
-          <li>سجّل الرابط ده في <b dir="ltr">cron-job.org</b> (مجاني) كل دقيقة عشان يفضل يشتغل:
-            <div class="ex-eg-pay-info-box" style="word-break:break-all;font-size:11.5px;direction:ltr;text-align:left" id="w-cloud-url"></div>
-          </li>
-        </ol>
-        <p class="ex-eg-hint">السطر ده فيه باسورد الحساب — الصقه في فيرسل بس ومتبعتوش في شات ولا إيميل.</p>
-      </div>
     </div>
   `;
 
@@ -126,35 +108,6 @@ export async function renderWorker(container) {
   timer = setInterval(() => { if (!document.body.contains(statusBox)) { clearInterval(timer); unsub(); return; } paint(); }, 5000);
 
   container.querySelector('#w-gen').addEventListener('click', () => { container.querySelector('#w-pass').value = randomPassword(); });
-
-  /* بيبني سطر WORKER_CONFIG الجاهز للصق في فيرسل/Render */
-  function showCloudConfig({ email, password, vapid }) {
-    const storeName = (window.MENU_DATA && (window.MENU_DATA.name?.ar || window.MENU_DATA.name)) || 'المحل';
-    const line = JSON.stringify({
-      projects: [{
-        name: typeof storeName === 'string' ? storeName : 'المحل',
-        databaseUrl: app.options.databaseURL,
-        apiKey: app.options.apiKey,
-        email,
-        password,
-        vapid,
-        vapidSubject: 'mailto:' + email,
-      }],
-      pollSeconds: 5,
-    });
-    const box = container.querySelector('#w-cloud');
-    const jsonEl = container.querySelector('#w-cloud-json');
-    const urlEl = container.querySelector('#w-cloud-url');
-    if (!box) return;
-    jsonEl.textContent = line;
-    urlEl.textContent = 'https://<موقعك>.vercel.app/api/worker?key=<CRON_SECRET>';
-    box.hidden = false;
-    const copyBtn = container.querySelector('#w-copy-json');
-    copyBtn.onclick = async () => {
-      try { await navigator.clipboard.writeText(line); copyBtn.textContent = 'اتنسخ ✓'; setTimeout(() => { copyBtn.textContent = 'نسخ السطر'; }, 1800); }
-      catch (e) { toast('المتصفح منع النسخ — حدّد السطر وانسخه يدوي', 'error'); }
-    };
-  }
 
   container.querySelector('#w-create').addEventListener('click', async () => {
     const name = container.querySelector('#w-name').value.trim() || 'وركر الإشعارات';
@@ -180,9 +133,6 @@ export async function renderWorker(container) {
         drive: { enabled: false, folderName: 'Freezer Images' },
       });
       info = { name, email, uid };
-      /* نفس البيانات بشكل جاهز للّصق في استضافة مجانية — عشان المالك ماينقلش
-         المفاتيح بإيده من الملف. */
-      showCloudConfig({ email, password, vapid });
       container.querySelector('#w-steps').hidden = false;
       btn.textContent = 'تنزيل config.json';
       toast('نزل config.json — حطه في مجلد push-worker وشغّل start.bat', 'success');

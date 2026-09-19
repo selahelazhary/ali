@@ -183,16 +183,66 @@ svg{width:1em;height:1em;}
 }
 .ex-eg-home .ex-eg-feedback-link:hover{background:var(--primary-soft);transform:translateY(-1px);}
 .ex-eg-feedback-link svg{width:19px;height:19px;flex-shrink:0;}
-.ex-eg-home .ex-eg-social-row{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:4px;animation:fadeUp .6s .24s var(--ease) both;}
+.ex-eg-home .ex-eg-social-row{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:4px;}
 .ex-eg-home .ex-eg-social-row a{
   display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:24%;overflow:hidden;
   box-shadow:0 4px 14px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.04);transition:box-shadow .2s,transform .2s var(--ease);
 }
 .ex-eg-home .ex-eg-social-row a:hover,.ex-eg-home .ex-eg-social-row a:focus-visible{box-shadow:0 8px 22px rgba(0,0,0,.26);transform:translateY(-3px);}
 .ex-eg-home .ex-eg-social-row svg{width:46px;height:46px;display:block;}
-/* أيقونة واتساب بتتلوّن بالـ currentColor مش زي باقي الأيقونات اللي جوّاها ألوانها */
-.ex-eg-home .ex-eg-social-row a.ex-eg-so-wa{background:#25D366;color:#fff;}
-.ex-eg-home .ex-eg-social-row a.ex-eg-so-wa svg{width:30px;height:30px;}
+/* أيقونة واتساب بتتلوّن بالـ currentColor مش زي باقي الأيقونات اللي جوّاها ألوانها،
+   فبنديها خلفية بلون العلامة عشان توزن جنب أيقونات فيسبوك/إنستجرام الملوّنة. */
+.ex-eg-home .ex-eg-social-row a.ex-eg-so-wa{
+  background:linear-gradient(150deg,#5BF07E 0%,#25D366 46%,#0FA958 100%);
+  color:#fff;box-shadow:0 4px 14px rgba(15,169,88,.34),0 0 0 1px rgba(0,0,0,.04);
+}
+.ex-eg-home .ex-eg-social-row a.ex-eg-so-wa:hover,
+.ex-eg-home .ex-eg-social-row a.ex-eg-so-wa:focus-visible{box-shadow:0 8px 22px rgba(15,169,88,.45);}
+.ex-eg-home .ex-eg-social-row a.ex-eg-so-wa svg{width:29px;height:29px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.22));}
+/* ===== كل زرار في الصفحة الرئيسية بيظهر بحركة مختلفة، واحد ورا التاني =====
+   ملاحظة: بنستخدم backwards مش both — both بيثبّت الـ transform بعد ما
+   الأنميشن يخلص فيلغي حركة الـ hover. */
+.ex-eg-home .ex-eg-main-menu-btn{animation:btnPopIn .62s cubic-bezier(.34,1.4,.64,1) .55s backwards;}
+.ex-eg-home .ex-eg-home-row .ex-eg-feedback-link:nth-child(1){animation:slideFromStart .5s var(--ease-soft, ease-out) .72s backwards;}
+.ex-eg-home .ex-eg-home-row .ex-eg-feedback-link:nth-child(2){animation:slideFromEnd .5s var(--ease-soft, ease-out) .84s backwards;}
+.ex-eg-home > .ex-eg-feedback-link{animation:flipUpIn .58s var(--ease-soft, ease-out) .98s backwards;transform-origin:50% 100%;}
+.ex-eg-home .ex-eg-social-row a:nth-child(1){animation:dropBounceIn .62s cubic-bezier(.34,1.5,.64,1) 1.12s backwards;}
+.ex-eg-home .ex-eg-social-row a:nth-child(2){animation:spinIn .58s cubic-bezier(.34,1.4,.64,1) 1.26s backwards;}
+.ex-eg-home .ex-eg-social-row a:nth-child(3){animation:dropBounceIn .62s cubic-bezier(.34,1.5,.64,1) 1.4s backwards;}
+.ex-eg-home .ex-eg-social-row a:nth-child(4){animation:spinIn .58s cubic-bezier(.34,1.4,.64,1) 1.54s backwards;}
+
+@keyframes btnPopIn{
+  0%  { opacity:0; transform:translateY(24px) scale(.86); }
+  62% { opacity:1; transform:translateY(0) scale(1.05); }
+  100%{ opacity:1; transform:none; }
+}
+@keyframes slideFromStart{
+  0%  { opacity:0; transform:translateX(-30px) scale(.94); }
+  100%{ opacity:1; transform:none; }
+}
+@keyframes slideFromEnd{
+  0%  { opacity:0; transform:translateX(30px) scale(.94); }
+  100%{ opacity:1; transform:none; }
+}
+@keyframes flipUpIn{
+  0%  { opacity:0; transform:perspective(620px) rotateX(-78deg); }
+  70% { opacity:1; transform:perspective(620px) rotateX(10deg); }
+  100%{ opacity:1; transform:none; }
+}
+@keyframes dropBounceIn{
+  0%  { opacity:0; transform:translateY(-32px) scale(.66); }
+  55% { opacity:1; transform:translateY(5px) scale(1.09); }
+  78% { transform:translateY(-3px) scale(.98); }
+  100%{ opacity:1; transform:none; }
+}
+@keyframes spinIn{
+  0%  { opacity:0; transform:rotate(-170deg) scale(.42); }
+  70% { opacity:1; transform:rotate(11deg) scale(1.1); }
+  100%{ opacity:1; transform:none; }
+}
+@media (prefers-reduced-motion:reduce){
+  .ex-eg-home .ex-eg-main-menu-btn,.ex-eg-home .ex-eg-feedback-link,.ex-eg-home .ex-eg-social-row a{animation:none;}
+}
 .ex-eg-home .ex-eg-powered-by{position:absolute;bottom:16px;font-size:11px;color:var(--muted);}
 
 .ex-eg-lang-switch{
@@ -881,7 +931,7 @@ html[dir="ltr"] .ex-eg-to-top svg{transform:rotate(90deg);}
 .ex-eg-to-top[hidden]{display:none;}
 
 /* ===== صفحة "فروعنا" + صف أزرار الرئيسية ===== */
-.ex-eg-home .ex-eg-home-row{display:flex;gap:10px;width:100%;max-width:320px;animation:fadeUp .6s .16s var(--ease) both;}
+.ex-eg-home .ex-eg-home-row{display:flex;gap:10px;width:100%;max-width:320px;}
 .ex-eg-home .ex-eg-home-row .ex-eg-feedback-link{flex:1;min-width:0;max-width:none;padding:12px 10px;animation:none;white-space:nowrap;}
 .ex-eg-branch-cards{display:grid;gap:14px;padding:4px 16px 20px;}
 .ex-eg-branch-cardc{border:1px solid var(--border);border-radius:18px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);}

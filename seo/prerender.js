@@ -158,7 +158,9 @@ async function main() {
   if (address) bakery.address = { '@type': 'PostalAddress', streetAddress: address, addressCountry: 'EG' };
   if (phone) bakery.telephone = phone;
   if (hours) bakery.openingHours = hours;
-  const socials = [menu.instagram, menu.facebook, menu.tiktok, menu.website].filter(Boolean);
+  /* واتساب ممكن يبقى رقم مش رابط — sameAs بتقبل روابط بس */
+  const waUrl = /^https?:\/\//i.test(String(menu.whatsapp || '')) ? menu.whatsapp : '';
+  const socials = [menu.instagram, menu.facebook, menu.tiktok, waUrl, menu.website].filter(Boolean);
   if (socials.length) bakery.sameAs = socials;
 
   if (cats.length) {

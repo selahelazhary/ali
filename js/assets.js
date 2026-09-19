@@ -22,8 +22,21 @@ export const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAA
 export function isAssetRef(v) { return typeof v === 'string' && v.startsWith(PREFIX); }
 export function assetId(v) { return String(v).slice(PREFIX.length); }
 
-function restUrl(id) {
-  const base = String(db.app.options.databaseURL || '').replace(/\/$/, '');
+/* مرآة الصور على مشروع فايربيز تاني — لتوزيع الضغط.
+   الصور محتواها ثابت (الـ id بصمة المحتوى) فنسخة تانية منها آمنة تماماً،
+   ومفيش تزامن ولا تعارض. بنقسّم القراءة على الاتنين حسب أول حرف في الـ id،
+   فكل صورة بتيجي **دايماً** من نفس المكان (الكاش يفضل نافع) والحِمل يتقسم
+   نص بنص. ولو صورة مش موجودة على واحد (صورة جديدة لسه ماتزامنتش) بنجرّب
+   التاني تلقائياً. سيبها فاضية عشان توقف المرآة. */
+const ASSET_MIRROR = 'https://mdhj-d3cdb-default-rtdb.firebaseio.com';
+
+function assetHosts(id) {
+  const primary = String(db.app.options.databaseURL || '').replace(/\/$/, '');
+  if (!ASSET_MIRROR || !/^[0-9a-f]/.test(id)) return [primary];
+  return parseInt(id[0], 16) % 2 === 0 ? [ASSET_MIRROR, primary] : [primary, ASSET_MIRROR];
+}
+
+function restUrl(id, base) {
   return `${base}/assets/${encodeURIComponent(id)}.json`;
 }
 
@@ -50,10 +63,16 @@ export async function getAsset(id) {
       } catch (e) { /* الكاش مش متاح — نكمل على الشبكة */ }
     }
     try {
-      const res = await fetch(restUrl(id));
-      if (!res.ok) return null;
-      const v = await res.json();
-      if (typeof v !== 'string' || !v) return null;
+      let v = null;
+      for (const base of assetHosts(id)) {
+        try {
+          const res = await fetch(restUrl(id, base));
+          if (!res.ok) continue;
+          const body = await res.json();
+          if (typeof body === 'string' && body) { v = body; break; }
+        } catch (e) { /* المصدر ده وقع — نجرّب اللي بعده */ }
+      }
+      if (!v) return null;
       MEM.set(id, v);
       /* المحتوى ثابت (الـ id بصمته) فالتخزين آمن للأبد */
       if (cache) cache.put(key, new Response(v, { headers: { 'content-type': 'text/plain' } })).catch(() => {});

@@ -189,7 +189,10 @@ export async function renderContact(container) {
         <div class="ex-eg-field"><label>إنستجرام</label><input id="s-ig" value="${esc(menu.instagram || '')}" dir="ltr"></div>
         <div class="ex-eg-field"><label>فيسبوك</label><input id="s-fb" value="${esc(menu.facebook || '')}" dir="ltr"></div>
       </div>
-      <div class="ex-eg-field"><label>تيك توك</label><input id="s-tt" value="${esc(menu.tiktok || '')}" dir="ltr"></div>
+      <div class="ex-eg-row-2">
+        <div class="ex-eg-field"><label>تيك توك</label><input id="s-tt" value="${esc(menu.tiktok || '')}" dir="ltr"></div>
+        <div class="ex-eg-field"><label>واتساب <span class="ex-eg-hint">(سيبها فاضية عشان يستخدم رقم التليفون)</span></label><input id="s-wa" value="${esc(menu.whatsapp || '')}" dir="ltr" placeholder="01012345678"></div>
+      </div>
       <button class="ex-eg-btn" id="save-contact">${ICONS.check} حفظ</button>
     </div>`;
   container.querySelector('#save-contact').addEventListener('click', async () => {
@@ -198,6 +201,7 @@ export async function renderContact(container) {
       m.address = $('#s-address').value.trim(); m.openingHours = $('#s-hours').value.trim();
       m.contactNumber = $('#s-phone').value.trim(); m.website = $('#s-website').value.trim();
       m.instagram = $('#s-ig').value.trim(); m.facebook = $('#s-fb').value.trim(); m.tiktok = $('#s-tt').value.trim();
+      m.whatsapp = $('#s-wa').value.trim();
     });
     toast('اتحفظت بيانات التواصل', 'success');
   });

@@ -1,5 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getAnalytics, isSupported as analyticsSupported } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
 import {
   getDatabase, ref, get, set, push, update, remove, onValue, child, query, limitToLast, orderByChild, runTransaction,
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
@@ -24,7 +23,19 @@ export const auth = getAuth(app);
 
 export { ref, get, set, push, update, remove, onValue, child, query, limitToLast, orderByChild, runTransaction, signInAnonymously, onAuthStateChanged, signOut };
 
-analyticsSupported().then((ok) => { if (ok) getAnalytics(app); }).catch(() => {});
+/* التحليلات مش لازمة عشان الموقع يشتغل، ومكتبتها بتجرّ معاها googletagmanager.
+   فبنأجّلها لبعد ما الصفحة تخلص تحميل، ومابنحمّلهاش خالص في لوحة التحكم —
+   كانت بتتحمّل مع الإقلاع وبتتأخّر أو تتحجب على شبكات ضعيفة. */
+if (!/^\/dashboard/.test(location.pathname)) {
+  const startAnalytics = () => setTimeout(async () => {
+    try {
+      const m = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js");
+      if (await m.isSupported()) m.getAnalytics(app);
+    } catch (e) { /* التحليلات اختيارية */ }
+  }, 2000);
+  if (document.readyState === 'complete') startAnalytics();
+  else addEventListener('load', startAnalytics, { once: true });
+}
 
 function withTimeout(promise, ms) {
   return Promise.race([

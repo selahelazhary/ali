@@ -88,6 +88,9 @@ function boot() {
       /* فحص الجهاز لازم يتم. لو فشل مابنفتحش اللوحة — قبل كده كان بيسمح
          بالدخول عند أي خطأ قراءة، وده كان بيخلّي ربط الجهاز بلا معنى. */
       bootProgress('بيتحقق من الجهاز');
+      /* ألوان اللوحة قراءة مستقلة — بتمشي بالتوازي مع فحص الجهاز بدل ما
+         تضيف رحلة زيادة على الطريق قبل ما اللوحة تظهر. */
+      const brandJob = withTimeout(applyBrand(), 6000, 'ألوان اللوحة').catch(() => {});
       const device = await withTimeout(bindOrVerifyDevice(user.uid), 15000, 'فحص الجهاز')
         .catch(() => ({ ok: false, unverified: true }));
       if (device.unverified) { renderDeviceUnverified(); return; }
@@ -95,7 +98,7 @@ function boot() {
       if (!started || !document.querySelector('.ex-eg-shell')) {
         started = true;
         bootProgress('بيجهّز اللوحة');
-        try { await withTimeout(applyBrand(), 6000, 'ألوان اللوحة'); } catch (e) { /* الألوان الافتراضية تكفي */ }
+        await brandJob;
         renderShell();
         /* وصلنا للوحة ⇒ الجلسة سليمة، فبنصفّر عدّاد الفشل */
         try { sessionStorage.removeItem('dash_fail_count'); } catch (err) { /* ignore */ }

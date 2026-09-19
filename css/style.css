@@ -190,6 +190,9 @@ svg{width:1em;height:1em;}
 }
 .ex-eg-home .ex-eg-social-row a:hover,.ex-eg-home .ex-eg-social-row a:focus-visible{box-shadow:0 8px 22px rgba(0,0,0,.26);transform:translateY(-3px);}
 .ex-eg-home .ex-eg-social-row svg{width:46px;height:46px;display:block;}
+/* أيقونة واتساب بتتلوّن بالـ currentColor مش زي باقي الأيقونات اللي جوّاها ألوانها */
+.ex-eg-home .ex-eg-social-row a.ex-eg-so-wa{background:#25D366;color:#fff;}
+.ex-eg-home .ex-eg-social-row a.ex-eg-so-wa svg{width:30px;height:30px;}
 .ex-eg-home .ex-eg-powered-by{position:absolute;bottom:16px;font-size:11px;color:var(--muted);}
 
 .ex-eg-lang-switch{

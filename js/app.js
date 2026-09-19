@@ -238,9 +238,11 @@ const LOGO_LAYERS = ['swoosh', 'arc', 'lines', 'cart', 'word1', 'word2', 'rays']
     const animateImage = !isVideoBg && !!bg && DATA.homeBgAnimate !== false && !reduceMotion;
     const stillBg = isVideoBg ? poster : bg;
     const bgHasLogo = bg && DATA.homeBgHasLogo !== false;
-    /* اللوجو الرسمي بيتعرض طبقتين: العربة بتدخل من جنب الشاشة وتستقر فوق النص.
-       بيشتغل بس مع لوجو الموقع الافتراضي — لو المالك غيّر اللوجو من اللوحة بنرجع لصورة واحدة. */
+    /* اللوجو الرسمي بيتعرض طبقات، كل عنصر بيظهر لوحده بترتيب.
+       بيشتغل بس مع لوجو الموقع الافتراضي — لو المالك رفع لوجو من اللوحة بنعرضه هو. */
     const splitLogo = !DATA.logo || /^assets\/logo\.png(\?|$)/.test(String(DATA.logo));
+    const wa = waLink();
+    const ar = state.lang === 'ar';
     return `
       <div class="ex-eg-home ${bg ? 'ex-eg-has-bg' : ''} ${animateImage ? 'ex-eg-bg-animated' : ''}" ${stillBg && !animateImage ? `style="background-image:url('${stillBg}')"` : ''}>
         ${showVideo ? `<video class="ex-eg-home-video" autoplay muted loop playsinline preload="auto" poster="${poster}" aria-hidden="true" tabindex="-1"><source src="${bg}" type="video/${/\.webm/i.test(bgRaw) ? 'webm' : 'mp4'}"></video>` : ''}
@@ -270,15 +272,28 @@ const LOGO_LAYERS = ['swoosh', 'arc', 'lines', 'cart', 'word1', 'word2', 'rays']
           ${hasBranches ? `<button class="ex-eg-feedback-link ex-eg-pressable" id="open-branches-home">${ICONS.storefront} ${T.branches}</button>` : ''}
         </div>` : ''}
         <button class="ex-eg-feedback-link ex-eg-pressable" id="open-feedback-home">${ICONS.chat} ${T.feedback}</button>
-        ${(DATA.instagram || DATA.tiktok || DATA.facebook) ? `
+        ${(DATA.instagram || DATA.tiktok || DATA.facebook || wa) ? `
           <div class="ex-eg-social-row">
-            ${DATA.instagram ? `<a href="${DATA.instagram}" target="_blank" rel="nofollow">${ICONS.instagram}</a>` : ''}
-            ${DATA.tiktok ? `<a href="${DATA.tiktok}" target="_blank" rel="nofollow">${ICONS.tiktok}</a>` : ''}
-            ${DATA.facebook ? `<a href="${DATA.facebook}" target="_blank" rel="nofollow">${ICONS.facebook}</a>` : ''}
+            ${wa ? `<a class="ex-eg-so-wa" href="${wa}" target="_blank" rel="noopener nofollow" aria-label="${ar ? 'واتساب' : 'WhatsApp'}">${ICONS.whatsapp}</a>` : ''}
+            ${DATA.instagram ? `<a href="${safeUrl(DATA.instagram)}" target="_blank" rel="nofollow">${ICONS.instagram}</a>` : ''}
+            ${DATA.tiktok ? `<a href="${safeUrl(DATA.tiktok)}" target="_blank" rel="nofollow">${ICONS.tiktok}</a>` : ''}
+            ${DATA.facebook ? `<a href="${safeUrl(DATA.facebook)}" target="_blank" rel="nofollow">${ICONS.facebook}</a>` : ''}
           </div>
         ` : ''}
       </div>
     `;
+  }
+
+  /* رقم واتساب → رابط wa.me. بيقبل رقم محلي (٠١٠…) أو دولي أو رابط جاهز. */
+  function waLink() {
+    const raw = String(DATA.whatsapp || DATA.contactNumber || '').trim();
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw)) return safeUrl(raw);
+    let d = raw.replace(/\D/g, '');
+    if (!d) return '';
+    if (d.startsWith('00')) d = d.slice(2);
+    else if (d.startsWith('0')) d = '20' + d.slice(1);   // رقم مصري محلي
+    return `https://wa.me/${d}`;
   }
 
   function bannerList() {

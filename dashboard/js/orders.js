@@ -120,9 +120,10 @@ export function renderOrders(container, { profile } = {}) {
     const list = container.querySelector('#orders-list');
     if (list) list.innerHTML = `<div class="ex-eg-empty-d">مفيش صلاحية قراءة الطلبات</div>`;
   };
+  /* اشتراك واحد بس. قبل كده كان في `get` إضافية ورا الاشتراك "عشان الكاش"،
+     بس onValue بيرجّع نسخة السيرفر لوحده — فكانت عقدة الطلبات بتتنزّل مرتين
+     كل مرة القسم يتفتح، وده تقيل جداً على نت ضعيف. */
   onValue(ref(db, 'orders'), consumeOrders, showReadError);
-  // Force a fresh read when opening the section so a stale local cache cannot hide new orders.
-  get(ref(db, 'orders')).then(consumeOrders).catch(showReadError);
 
   function typeOf(o) { return o.deliveryMethod === 'delivery' ? 'delivery' : 'pickup'; }
 

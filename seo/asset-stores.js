@@ -21,6 +21,7 @@ const path = require('path');
 const STORES = [
   { key: 'b', project: 'mdhj-d3cdb', url: 'https://mdhj-d3cdb-default-rtdb.firebaseio.com' },
   { key: 'c', project: 'earc-55619', url: 'https://earc-55619-default-rtdb.europe-west1.firebasedatabase.app' },
+  { key: 'd', project: 'newserver1-c9a15', url: 'https://newserver1-c9a15-default-rtdb.firebaseio.com' },
 ];
 const PRIMARY = { key: 'a', project: 'alih-5212b', url: 'https://alih-5212b-default-rtdb.firebaseio.com' };
 const RULES = path.join(__dirname, '..', 'mirror-rules.json');

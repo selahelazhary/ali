@@ -9,7 +9,7 @@ import { ASSET_MAX_CHARS } from '../../js/imageUtils.js';
    أول مخزن يقبل الكتابة هي اللي الصورة تستقر فيه، والإشارة اللي بتترجع
    بتحمل حرفه — فلما مخزن يمتلي (القاعدة بترفض الكتابة) الرفع بيكمّل على
    اللي بعده لوحده من غير أي تدخّل. القاعدة الأساسية آخر الطابور. */
-const UPLOAD_CHAIN = ['b', 'c'];
+const UPLOAD_CHAIN = ['b', 'c', 'd'];
 
 async function storeHas(base, id) {
   try {

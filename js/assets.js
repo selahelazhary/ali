@@ -23,6 +23,7 @@ import { db } from './firebase-config.js';
 export const ASSET_STORES = {
   b: 'https://mdhj-d3cdb-default-rtdb.firebaseio.com',
   c: 'https://earc-55619-default-rtdb.europe-west1.firebasedatabase.app',
+  d: 'https://newserver1-c9a15-default-rtdb.firebaseio.com',
 };
 const PREFIX = 'a:';
 const CACHE_NAME = 'bakery-assets-v1';

@@ -3,6 +3,7 @@
    بتقدر تخزّنها في كاش المتصفح للأبد من غير إعادة تحقق. */
 import { db, ref, set, get } from '../../js/firebase-config.js';
 import { isAssetRef } from '../../js/assets.js';
+import { ASSET_MAX_CHARS } from '../../js/imageUtils.js';
 
 async function sha1Hex(text) {
   const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(text));
@@ -15,13 +16,21 @@ async function sha1Hex(text) {
 export async function publishImage(value) {
   const v = String(value || '');
   if (!v || !v.startsWith('data:')) return v;
+  /* القاعدة بترفض أي صورة أطول من الحد ده — بنمسكها بدري برسالة مفهومة
+     بدل ما الحفظ يفشل بصمت وتفضل إشارة معلّقة في المنيو. */
+  if (v.length > ASSET_MAX_CHARS) {
+    throw new Error(`الصورة كبيرة على القاعدة (${Math.round(v.length / 1024)} ك.ب) — صغّرها وجرب تاني`);
+  }
   const id = (await sha1Hex(v)).slice(0, 16);
   const slot = ref(db, `assets/${id}`);
-  try {
-    const snap = await get(slot);
-    if (!snap.exists()) await set(slot, v);
-  } catch (e) {
-    await set(slot, v);   // القراءة فشلت — نكتب على أي حال
+  let exists = false;
+  try { exists = (await get(slot)).exists(); } catch (e) { exists = false; }
+  if (!exists) {
+    try {
+      await set(slot, v);
+    } catch (e) {
+      throw new Error('متقدرناش نحفظ الصورة — راجع صلاحيات حسابك والإنترنت');
+    }
   }
   return 'a:' + id;
 }

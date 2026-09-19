@@ -199,7 +199,7 @@ function renderAuthScreen(root, adminConfigured, onReady) {
   root.innerHTML = `
     <div class="ex-eg-auth-screen">
       <div class="ex-eg-auth-card">
-        <img class="ex-eg-auth-logo" src="../assets/logo.png" alt="">
+        <img class="ex-eg-auth-logo" src="../assets/logo.png?v=5" alt="">
         <h1>${adminConfigured ? 'دخول لوحة التحكم' : 'إعداد حساب المالك'}</h1>
         <p>${adminConfigured ? 'ادخل الإيميل والباسورد' : 'أول مرة فقط — الحساب ده هيكون له كل الصلاحيات'}</p>
         <div class="ex-eg-auth-error" id="auth-error" hidden></div>

@@ -28,6 +28,24 @@ export function toast(msg, type = '') {
   setTimeout(() => { el.classList.remove('ex-eg-show'); setTimeout(() => el.remove(), 300); }, 3200);
 }
 
+/* شبكة أمان: أي عملية حفظ بتفشل جوّه معالِج ضغطة زرار كانت بتموت في صمت —
+   المستخدم يدوس "حفظ" ومايحصلش حاجة ومايعرفش ليه. دلوقتي أي فشل غير متعامَل
+   معاه بيطلع في رسالة. (بنتجاهل إلغاء المستخدم وأخطاء التحميل العابرة.) */
+let lastRejectAt = 0;
+window.addEventListener('unhandledrejection', (e) => {
+  const err = e && e.reason;
+  const msg = (err && (err.message || err.code)) ? String(err.message || err.code) : '';
+  if (!msg || /AbortError|The user aborted|Load failed|NetworkError when attempting/i.test(msg)) return;
+  const now = Date.now();
+  if (now - lastRejectAt < 2500) return;      // مانغرقش الشاشة برسايل مكرّرة
+  lastRejectAt = now;
+  toast(msg.slice(0, 160), 'error');
+});
+
+/* ملاحظة مهمة: صلاحية كل قسم هنا لازم تطابق `firebase-rules.json`.
+   هوية المحل/البانر/التواصل كلهم بيكتبوا في عقدة `menu` (محتاجة صلاحية
+   "المنيو")، وباقي الإعدادات بتكتب في `settings` (مالك بس). قبل كده كانت
+   الأقسام دي بتتفتح لأدمن مش هيقدر يحفظ فيها أصلاً. */
 const SECTIONS = [
   { key: 'overview', group: 'main', label: 'نظرة عامة', icon: ICONS.chart, render: renderOverview, perm: null },
   { key: 'orders', group: 'sales', label: 'الطلبات', icon: ICONS.bag, render: renderOrders, perm: 'orders' },
@@ -36,13 +54,13 @@ const SECTIONS = [
   { key: 'branches', group: 'catalog', label: 'الفروع', icon: ICONS.storefront, render: renderBranches, perm: 'branches' },
   { key: 'customers', group: 'customers', label: 'العملاء', icon: ICONS.users, render: renderCustomers, perm: 'customers' },
   { key: 'feedback', group: 'customers', label: 'آراء العملاء', icon: ICONS.chat, render: renderFeedback, perm: 'feedback' },
-  { key: 'identity', group: 'settings', label: 'هوية المحل', icon: ICONS.storefront, render: renderIdentity, perm: 'settings.identity' },
-  { key: 'banners', group: 'settings', label: 'صور البانر', icon: ICONS.images, render: renderBanners, perm: 'settings.banners' },
-  { key: 'payments', group: 'settings', label: 'بوابات الدفع', icon: ICONS.cash, render: renderPayments, perm: 'settings.payments' },
-  { key: 'governorates', group: 'settings', label: 'محافظات التوصيل', icon: ICONS.truck, render: renderGovernorates, perm: 'settings.governorates' },
-  { key: 'contact', group: 'settings', label: 'التواصل والعنوان', icon: ICONS.phone, render: renderContact, perm: 'settings.contact' },
-  { key: 'features', group: 'settings', label: 'الإشعارات والتطبيق', icon: ICONS.bell, render: renderFeatures, perm: 'settings.features' },
-  { key: 'telegram', group: 'settings', label: 'بوت تليجرام', icon: ICONS.send, render: renderTelegram, perm: 'settings.telegram' },
+  { key: 'identity', group: 'settings', label: 'هوية المحل', icon: ICONS.storefront, render: renderIdentity, perm: 'menu' },
+  { key: 'banners', group: 'settings', label: 'صور البانر', icon: ICONS.images, render: renderBanners, perm: 'menu' },
+  { key: 'payments', group: 'settings', label: 'بوابات الدفع', icon: ICONS.cash, render: renderPayments, perm: 'owner' },
+  { key: 'governorates', group: 'settings', label: 'محافظات التوصيل', icon: ICONS.truck, render: renderGovernorates, perm: 'owner' },
+  { key: 'contact', group: 'settings', label: 'التواصل والعنوان', icon: ICONS.phone, render: renderContact, perm: 'menu' },
+  { key: 'features', group: 'settings', label: 'الإشعارات والتطبيق', icon: ICONS.bell, render: renderFeatures, perm: 'owner' },
+  { key: 'telegram', group: 'settings', label: 'بوت تليجرام', icon: ICONS.send, render: renderTelegram, perm: 'owner' },
   { key: 'admins', group: 'admin', label: 'الأدمنز والصلاحيات', icon: ICONS.shield, render: renderAdmins, perm: 'owner' },
   { key: 'backup', group: 'admin', label: 'نسخة احتياطية', icon: ICONS.upload, render: renderBackup, perm: 'owner' },
   { key: 'worker', group: 'admin', label: 'وركر الإشعارات', icon: ICONS.bell, render: renderWorker, perm: 'owner' },
@@ -121,7 +139,7 @@ async function applyBrand() {
 function renderDeviceUnverified() {
   root.innerHTML = `
     <div class="ex-eg-auth-screen"><div class="ex-eg-auth-card">
-      <img class="ex-eg-auth-logo" src="../assets/logo.png?v=4" alt="">
+      <img class="ex-eg-auth-logo" src="../assets/logo.png?v=5" alt="">
       <h1>تعذّر التحقق من الجهاز</h1>
       <p>مقدرناش نتأكد إن الجهاز ده مصرّح له يفتح اللوحة — غالباً الاتصال ضعيف.<br>
          لأمان حسابك مش هنفتح اللوحة من غير التحقق ده.</p>
@@ -138,7 +156,7 @@ function renderWrongDevice(info, user) {
   const paint = (pending) => {
     root.innerHTML = `
       <div class="ex-eg-auth-screen"><div class="ex-eg-auth-card">
-        <img class="ex-eg-auth-logo" src="../assets/logo.png?v=4" alt="">
+        <img class="ex-eg-auth-logo" src="../assets/logo.png?v=5" alt="">
         <h1>${pending ? 'في انتظار الموافقة' : 'جهاز غير مصرّح له'}</h1>
         <p>${pending
           ? 'تم إرسال طلب نقل الحساب لهذا الجهاز. بمجرد موافقة المالك هيفتح تلقائياً.'
@@ -228,7 +246,7 @@ function renderShell() {
     </div>
     <div class="ex-eg-shell">
       <aside class="ex-eg-sidebar" id="sidebar">
-        <div class="ex-eg-brand"><img src="../assets/logo.png?v=4" alt=""><span>منوعات عباد الرحمان</span></div>
+        <div class="ex-eg-brand"><img src="../assets/logo.png?v=5" alt=""><span>منوعات عباد الرحمان</span></div>
         <div class="ex-eg-who">${ICONS.shield}<span>${currentProfile.name || currentProfile.email}</span><small>${currentProfile.role === 'owner' ? 'مالك' : 'موظف'}</small></div>
         <nav id="nav-list"></nav>
         <div class="ex-eg-sidebar-footer">

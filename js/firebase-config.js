@@ -88,6 +88,7 @@ window.__firebaseMenuPromise = loadMenuFromFirebase();
    مهم: بتتنادى من صفحة العميل بس. لو اشتغلت في لوحة التحكم ممكن تحل محل
    جلسة الأدمن، عشان كده هي دالة بتتنادى صراحةً مش بتشتغل لوحدها. */
 let guestPromise = null;
+const GUEST_OFF = 'nb_guest_off';
 export function ensureGuest() {
   if (guestPromise) return guestPromise;
   guestPromise = (async () => {
@@ -97,11 +98,19 @@ export function ensureGuest() {
       setTimeout(() => resolve(auth.currentUser), 5000);
     });
     if (current) return current;
+    /* الدخول المجهول مقفول من الكونسول في المشروع ده. محاولة الدخول بتفشل
+       بأربع طلبات على الشبكة كل مرة الصفحة تفتح — تقيلة على نت ضعيف ومالهاش
+       لازمة (قواعد القاعدة بتسمح بإنشاء الطلب من غير تسجيل دخول). فبنفتكر إنه
+       مقفول ومانحاولش تاني. أول ما يتفتح من الكونسول، امسح المفتاح ده. */
+    try { if (localStorage.getItem(GUEST_OFF) === '1') return null; } catch (e) { /* ignore */ }
     try {
       const { user } = await signInAnonymously(auth);
       return user;
     } catch (e) {
-      /* ADMIN_ONLY_OPERATION = الدخول المجهول متقفل من الكونسول — نكمّل عادي */
+      const code = `${(e && e.code) || ''} ${(e && e.message) || ''}`;
+      if (/admin-restricted|operation-not-allowed|ADMIN_ONLY|OPERATION_NOT_ALLOWED/i.test(code)) {
+        try { localStorage.setItem(GUEST_OFF, '1'); } catch (err) { /* ignore */ }
+      }
       return null;
     }
   })();

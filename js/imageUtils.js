@@ -22,9 +22,13 @@ export function toDirectImageUrl(url) {
    PNG بلا فقد. فسكرين التحويل الجاي من الموبايل (PNG) كان بيطلع أكبر من الحد
    اللي القاعدة بتقبله، فالكتابة بترفض والصورة تضيع.
    عشان كده: لما يبقى في حد أقصى بنطلع JPEG وبنصغّر تدريجياً لحد ما ندخل فيه. */
-export async function compressImage(file, { maxSide = 700, quality = 0.72, maxBytes = 0, forceJpeg = false } = {}) {
+/* قاعدة البيانات بترفض أي صورة طولها كـ data URL أكبر من 900,000 حرف
+   (`assets/$id` في firebase-rules.json). بنسيب هامش أمان صغير. */
+export const ASSET_MAX_CHARS = 860000;
+
+export async function compressImage(file, { maxSide = 700, quality = 0.72, maxBytes = 0, forceJpeg = false, keepAlpha = false } = {}) {
   const bitmap = await createImageBitmap(file);
-  const wantAlpha = !forceJpeg && !maxBytes && (file.type === 'image/png' || file.type === 'image/webp');
+  const wantAlpha = keepAlpha || (!forceJpeg && !maxBytes && (file.type === 'image/png' || file.type === 'image/webp'));
 
   const render = (side, q, alpha) => {
     const scale = Math.min(1, side / Math.max(bitmap.width, bitmap.height));
@@ -43,11 +47,12 @@ export async function compressImage(file, { maxSide = 700, quality = 0.72, maxBy
   /* لسه أكبر من المسموح؟ نقلّل الجودة الأول وبعدين المقاس */
   if (maxBytes) {
     let guard = 0;
-    while (out.length > maxBytes && guard++ < 12) {
-      if (q > 0.4) q = Math.max(0.35, q - 0.12);
+    while (out.length > maxBytes && guard++ < 14) {
+      if (wantAlpha) side = Math.max(240, Math.round(side * 0.82));   // PNG بيتجاهل الجودة
+      else if (q > 0.4) q = Math.max(0.35, q - 0.12);
       else side = Math.max(320, Math.round(side * 0.8));
-      out = render(side, q, false);
-      if (q <= 0.35 && side <= 320) break;
+      out = render(side, q, wantAlpha);
+      if (side <= (wantAlpha ? 240 : 320) && (wantAlpha || q <= 0.35)) break;
     }
   }
 
@@ -275,6 +280,11 @@ export function wireImageField(root, id) {
               ? `تحميل الأداة ${pct}% — أول مرة بس، بعد كده فورية`
               : `إزالة الخلفية ${pct}%`;
           });
+          if (dataUrl && dataUrl.length > ASSET_MAX_CHARS) {
+            status.textContent = 'جاري تصغير الصورة...';
+            const blob = await (await fetch(dataUrl)).blob();
+            dataUrl = await compressImage(blob, { maxSide: 1000, maxBytes: ASSET_MAX_CHARS, keepAlpha: true });
+          }
           status.textContent = 'اتشالت الخلفية ✓';
         } catch (e) {
           // مانرفعش صورة بخلفية والمستخدم فاكر إنها اتشالت — نقوله الحقيقة
@@ -284,7 +294,9 @@ export function wireImageField(root, id) {
         }
       } else {
         status.textContent = 'جاري تجهيز الصورة...';
-        dataUrl = await compressImage(f);
+        /* من غير حد أقصى كان PNG بيطلع أكبر من اللي القاعدة بتقبله، فالحفظ
+           بيترفض من غير ما المستخدم يعرف. الحد ده بيضمن إن الصورة تتخزّن. */
+        dataUrl = await compressImage(f, { maxSide: 1200, quality: 0.82, maxBytes: ASSET_MAX_CHARS });
       }
       show(dataUrl);
       status.textContent = 'جاري الرفع على Drive...';

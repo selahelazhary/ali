@@ -19,7 +19,17 @@ async function readNode(path, fallback) {
   try { const s = await get(ref(db, path)); return s.exists() ? s.val() : fallback; } catch (e) { return fallback; }
 }
 async function patchMenu(fn) {
-  const full = await readMenu();
+  /* الحفظ بيستبدل عقدة المنيو **كلها**. لو القراءة فشلت وكمّلنا بالنسخة
+     المحفوظة في الذاكرة، كنا ممكن نكتب نسخة قديمة فوق الحيّة ونضيّع منتجات.
+     فشل القراءة ⇒ نوقف الحفظ. (منيو فاضي فعلاً حاجة تانية ومسموح بيها.) */
+  let full;
+  try {
+    const snap = await get(ref(db, 'menu'));
+    full = snap.exists() ? snap.val() : {};
+  } catch (e) {
+    toast('متقدرناش نقرا المنيو الحالي — وقفنا الحفظ عشان مانمسحش حاجة. جرب تاني', 'error');
+    throw e;
+  }
   fn(full);
   try { await set(ref(db, 'menu'), full); }
   catch (e) { toast('مفيش صلاحية للحفظ — راجع صلاحيات حسابك', 'error'); throw e; }

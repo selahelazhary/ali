@@ -2,24 +2,33 @@
    الـ id بصمة المحتوى، فرفع نفس الصورة مرتين ما بيكرّرهاش، وصفحة العميل
    بتقدر تخزّنها في كاش المتصفح للأبد من غير إعادة تحقق. */
 import { db, ref, set, get } from '../../js/firebase-config.js';
-import { isAssetRef } from '../../js/assets.js';
+import { isAssetRef, ASSET_STORES } from '../../js/assets.js';
 import { ASSET_MAX_CHARS } from '../../js/imageUtils.js';
 
-/* مرآة الصور على مشروع فايربيز تاني — الموقع بيقسّم قراءة الصور على
-   الاتنين فسقف التحميل المجاني بيتضاعف. بنكتب النسخة التانية هنا وقت الرفع
-   عشان مايبقاش في أي خطوة يدوية.
-   القواعد هناك بتسمح بالإنشاء بس (‎!data.exists()‎) وبصورة واحدة لكل بصمة،
-   يعني مفيش استبدال ولا مسح. ولو الكتابة فشلت مفيش مشكلة خالص: الموقع
-   بيرجع للمصدر الأساسي تلقائياً. */
-const ASSET_MIRROR = 'https://mdhj-d3cdb-default-rtdb.firebaseio.com';
+/* ترتيب مخازن الصور وقت الرفع: b بعدين c بعدين القاعدة الأساسية.
+   أول مخزن يقبل الكتابة هي اللي الصورة تستقر فيه، والإشارة اللي بتترجع
+   بتحمل حرفه — فلما مخزن يمتلي (القاعدة بترفض الكتابة) الرفع بيكمّل على
+   اللي بعده لوحده من غير أي تدخّل. القاعدة الأساسية آخر الطابور. */
+const UPLOAD_CHAIN = ['b', 'c'];
 
-function mirrorPut(id, dataUrl) {
-  if (!ASSET_MIRROR) return;
-  fetch(`${ASSET_MIRROR}/assets/${encodeURIComponent(id)}.json`, {
-    method: 'PUT',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(dataUrl),
-  }).catch(() => { /* المرآة اختيارية */ });
+async function storeHas(base, id) {
+  try {
+    const r = await fetch(`${base}/assets/${encodeURIComponent(id)}.json`);
+    if (!r.ok) return false;
+    const v = await r.json();
+    return typeof v === 'string' && !!v;
+  } catch (e) { return false; }
+}
+
+async function storePut(base, id, dataUrl) {
+  try {
+    const r = await fetch(`${base}/assets/${encodeURIComponent(id)}.json`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(dataUrl),
+    });
+    return r.ok;
+  } catch (e) { return false; }
 }
 
 async function sha1Hex(text) {
@@ -39,8 +48,17 @@ export async function publishImage(value) {
     throw new Error(`الصورة كبيرة على القاعدة (${Math.round(v.length / 1024)} ك.ب) — صغّرها وجرب تاني`);
   }
   const id = (await sha1Hex(v)).slice(0, 16);
+
+  /* نجرّب المخازن الإضافية الأول — بيوفّروا مساحة وتحميل على القاعدة الأساسية */
+  for (const key of UPLOAD_CHAIN) {
+    const base = ASSET_STORES[key];
+    if (!base) continue;
+    if (await storeHas(base, id)) return key + ':' + id;
+    if (await storePut(base, id, v)) return key + ':' + id;
+  }
+
+  /* كل المخازن رفضت (امتلت أو مش متاحة) ⇒ القاعدة الأساسية */
   const slot = ref(db, `assets/${id}`);
-  mirrorPut(id, v);            // نسخة تانية لتوزيع الضغط — مابنستناهاش
   let exists = false;
   try { exists = (await get(slot)).exists(); } catch (e) { exists = false; }
   if (!exists) {

@@ -1,6 +1,6 @@
 /* Freezer service worker — offline shell, Web Push delivery, notification clicks.
    Push payloads are sent by the Python worker using VAPID (no FCM). */
-const CACHE = 'bakery-shell-v42';
+const CACHE = 'bakery-shell-v43';
 /* ملاحظة: Hosting شغّال عليه cleanUrls، يعني /index.html بيتحوّل لـ / —
    فبنخزّن الجذر './' بس عشان مانخزّنش رد فيه تحويل. */
 const SHELL = [
@@ -59,8 +59,8 @@ self.addEventListener('fetch', (e) => {
 
 self.addEventListener('push', (e) => {
   let data = {};
-  try { data = e.data ? e.data.json() : {}; } catch (err) { data = { title: e.data ? e.data.text() : 'منوعات الرحمان' }; }
-  const title = data.title || 'منوعات الرحمان';
+  try { data = e.data ? e.data.json() : {}; } catch (err) { data = { title: e.data ? e.data.text() : 'منوعات عباد الرحمان' }; }
+  const title = data.title || 'منوعات عباد الرحمان';
   e.waitUntil(self.registration.showNotification(title, {
     body: data.body || '',
     icon: data.icon || '/assets/logo.png',

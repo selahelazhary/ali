@@ -84,8 +84,8 @@ function rememberOrder(id, summary) {
 const STR = {
   ar: {
     cart: 'عربة الطلبات', empty: 'العربة فاضية', total: 'الإجمالي', subtotal: 'المجموع', deliveryFee: 'رسوم التوصيل', checkout: 'إتمام الطلب',
-    orderType: 'نوع الطلب', inside: 'استلام من المحل', outside: 'توصيل للبيت',
-    tableNumber: 'رقم الطاولة', pickup: 'استلام من الفرع', delivery: 'توصيل للعنوان', branch: 'اختار الفرع', branchFrom: 'الفرع اللي هيجهّز طلبك',
+    pickup: 'استلام من الفرع', delivery: 'توصيل للعنوان',
+    branch: 'اختار الفرع', branchFrom: 'الفرع اللي هيجهّز طلبك',
     governorate: 'المحافظة', chooseGov: 'اختار المحافظة', noGov: 'التوصيل مش متاح حالياً في محافظات تانية',
     name: 'الاسم', phone: 'رقم التليفون', address: 'العنوان بالتفصيل', notes: 'ملاحظات (اختياري)',
     payment: 'طريقة الدفع', cod: 'الدفع عند الاستلام', codSub: 'كاش لما يوصلك الطلب', vodafone: 'فودافون كاش', vodafoneSub: 'حوّل على الرقم وابعت رقم العملية', etisalat: 'اتصالات كاش (e& cash)', etisalatSub: 'حوّل على الرقم وابعت رقم العملية',
@@ -100,8 +100,8 @@ const STR = {
   },
   en: {
     cart: 'Your Cart', empty: 'Your cart is empty', total: 'Total', subtotal: 'Subtotal', deliveryFee: 'Delivery fee', checkout: 'Checkout',
-    orderType: 'Order Type', inside: 'Pickup from store', outside: 'Home delivery',
-    tableNumber: 'Table Number', pickup: 'Pickup from branch', delivery: 'Delivery to address', branch: 'Choose a branch', branchFrom: 'Branch preparing your order',
+    pickup: 'Pickup from branch', delivery: 'Delivery to address',
+    branch: 'Choose a branch', branchFrom: 'Branch preparing your order',
     governorate: 'Governorate', chooseGov: 'Choose governorate', noGov: 'Delivery is not available in other governorates yet',
     name: 'Name', phone: 'Phone Number', address: 'Full Address', notes: 'Notes (optional)',
     payment: 'Payment method', cod: 'Cash on delivery', codSub: 'Pay in cash when you receive it', vodafone: 'Vodafone Cash', vodafoneSub: 'Transfer to the number and enter the transaction ref', etisalat: 'e& cash (Etisalat)', etisalatSub: 'Transfer to the number and enter the transaction ref',
@@ -195,17 +195,16 @@ function renderCheckout(ctx) {
     payments.etisalatCash && payments.etisalatCash.enabled ? { id: 'etisalatCash', icon: ICONS.etisalatCash, label: S.etisalat, sub: S.etisalatSub, payTo: payments.etisalatCash.number, cfg: payments.etisalatCash } : null,
     payments.instapay && payments.instapay.enabled ? { id: 'instapay', icon: ICONS.instapay, label: S.instapay, sub: S.instapaySub, payTo: payments.instapay.address, link: payments.instapay.link, cfg: payments.instapay } : null,
   ].filter(Boolean);
-  /* كل بوابة ممكن تتحدد من الأدمن: تظهر لطلبات جوّه المحل ولا برّه ولا الاتنين */
-  const optionsFor = (type) => {
-    const list = allPayOptions.filter(o => paymentInScope(o.cfg, type));
+  /* كل بوابة ممكن تتحدد من الأدمن: تظهر لطلبات الاستلام ولا التوصيل ولا الاتنين */
+  const optionsFor = (dm) => {
+    const list = allPayOptions.filter(o => paymentInScope(o.cfg, dm));
     return list.length ? list : [codOption];
   };
   const requireProof = payments.requireProof !== false;
 
   const items = readCart();
-  let orderType = 'inside';
   let deliveryMethod = 'pickup';
-  let payOptions = optionsFor(orderType);
+  let payOptions = optionsFor(deliveryMethod);
   let paymentMethod = payOptions[0].id;
   let paymentProof = null;
   let branchId = branches[0] ? branches[0].id : null;
@@ -215,10 +214,10 @@ function renderCheckout(ctx) {
     <div class="ex-eg-sheet-title">${S.checkout}<button class="ex-eg-icon-btn ex-eg-ghost close-modal">${ICONS.close}</button></div>
     <div class="ex-eg-checkout-form">
       <div class="ex-eg-order-type-tabs">
-        <button type="button" class="ex-eg-ot-tab ex-eg-active" data-type="inside">${ICONS.table}${S.inside}</button>
-        <button type="button" class="ex-eg-ot-tab" data-type="outside">${ICONS.bag}${S.outside}</button>
+        <button type="button" class="ex-eg-ot-tab ex-eg-active" data-dm="pickup">${ICONS.bag}${S.pickup}</button>
+        <button type="button" class="ex-eg-ot-tab" data-dm="delivery">${ICONS.bike}${S.delivery}</button>
       </div>
-      <div id="type-fields"></div>
+      <div id="dm-fields"></div>
 
       <label class="ex-eg-field-label">${S.name}</label>
       <input class="ex-eg-field-input" id="f-name" type="text" required>
@@ -240,7 +239,7 @@ function renderCheckout(ctx) {
   const q = (sel) => overlay.querySelector(sel);
 
   function deliveryFee() {
-    if (orderType !== 'outside' || deliveryMethod !== 'delivery' || !govId) return 0;
+    if (deliveryMethod !== 'delivery' || !govId) return 0;
     return Number((govSettings[govId] || {}).deliveryFee || 0);
   }
   function renderSummary() {
@@ -252,32 +251,6 @@ function renderCheckout(ctx) {
     `;
   }
 
-  function renderTypeFields() {
-    const box = q('#type-fields');
-    if (orderType === 'inside') {
-      box.innerHTML = `
-        ${branches.length > 1 ? branchPicker() : ''}
-        <label class="ex-eg-field-label">${S.tableNumber}</label>
-        <input class="ex-eg-field-input" id="f-table" type="text" inputmode="numeric" required>
-      `;
-    } else {
-      box.innerHTML = `
-        <div class="ex-eg-order-type-tabs ex-eg-sub-tabs">
-          <button type="button" class="ex-eg-ot-tab ${deliveryMethod === 'pickup' ? 'ex-eg-active' : ''}" data-dm="pickup">${ICONS.bag}${S.pickup}</button>
-          <button type="button" class="ex-eg-ot-tab ${deliveryMethod === 'delivery' ? 'ex-eg-active' : ''}" data-dm="delivery">${ICONS.bike}${S.delivery}</button>
-        </div>
-        <div id="dm-fields"></div>
-      `;
-      renderDmFields();
-      box.querySelectorAll('[data-dm]').forEach(btn => btn.addEventListener('click', () => {
-        deliveryMethod = btn.dataset.dm;
-        box.querySelectorAll('[data-dm]').forEach(b => b.classList.toggle('ex-eg-active', b === btn));
-        renderDmFields();
-        renderSummary();
-      }));
-    }
-    wireBranchPicker();
-  }
   /* اختيار الفرع: زرار بيفتح قائمة عائمة فيها كل الفروع مع بحث —
      أنضف بكتير من قائمة طويلة مفرودة وقت ما الفروع تكتر. */
   function branchPicker(list = branches, label = S.branch) {
@@ -441,9 +414,9 @@ function renderCheckout(ctx) {
     wireBranchPicker(list);
   }
 
-  /* طرق الدفع بتتغيّر حسب نوع الطلب (جوّه/برّه) زي ما الأدمن ظابطها */
+  /* طرق الدفع بتتغيّر حسب نوع الطلب (استلام/توصيل) زي ما الأدمن ظابطها */
   function renderPayMethods() {
-    payOptions = optionsFor(orderType);
+    payOptions = optionsFor(deliveryMethod);
     if (!payOptions.some(p => p.id === paymentMethod)) paymentMethod = payOptions[0].id;
     q('#pay-methods').innerHTML = payOptions.map(p => `
       <button type="button" class="ex-eg-pay-opt ${p.id === paymentMethod ? 'ex-eg-active' : ''}" data-pay="${p.id}">
@@ -512,15 +485,15 @@ function renderCheckout(ctx) {
     if (empty) empty.hidden = true;
   }
 
-  renderTypeFields();
+  renderDmFields();
   renderPayMethods();
   renderSummary();
 
-  overlay.querySelectorAll('.ex-eg-order-type-tabs:not(.ex-eg-sub-tabs) [data-type]').forEach(btn => {
+  overlay.querySelectorAll('.ex-eg-order-type-tabs [data-dm]').forEach(btn => {
     btn.addEventListener('click', () => {
-      orderType = btn.dataset.type;
-      overlay.querySelectorAll('.ex-eg-order-type-tabs:not(.ex-eg-sub-tabs) [data-type]').forEach(b => b.classList.toggle('ex-eg-active', b === btn));
-      renderTypeFields();
+      deliveryMethod = btn.dataset.dm;
+      overlay.querySelectorAll('.ex-eg-order-type-tabs [data-dm]').forEach(b => b.classList.toggle('ex-eg-active', b === btn));
+      renderDmFields();
       renderPayMethods();
       renderSummary();
     });
@@ -530,15 +503,13 @@ function renderCheckout(ctx) {
     const name = q('#f-name').value.trim();
     const phone = q('#f-phone').value.trim();
     const notes = q('#f-notes').value.trim();
-    const table = q('#f-table');
     const addressEl = q('#f-address');
     const txRef = q('#f-txref');
     const errBox = q('#checkout-error');
-    const isDelivery = orderType === 'outside' && deliveryMethod === 'delivery';
+    const isDelivery = deliveryMethod === 'delivery';
 
     const needsProof = paymentMethod !== 'cod' && requireProof;
     const missing = !name || !phone
-      || (orderType === 'inside' && (!table || !table.value.trim()))
       || (isDelivery && (!addressEl || !addressEl.value.trim() || !govId));
     if (missing) { errBox.hidden = false; errBox.textContent = S.required; return; }
     /* رقم العملية إجباري في أي دفع غير الكاش — حتى لو العميل رفع صورة التحويل،
@@ -563,9 +534,7 @@ function renderCheckout(ctx) {
       deliveryFee: fee,
       total: cartTotal() + fee,
       currencyCode,
-      orderType,
-      deliveryMethod: orderType === 'outside' ? deliveryMethod : null,
-      tableNumber: orderType === 'inside' ? table.value.trim() : null,
+      deliveryMethod,
       branchId: branchId || null,
       branchName: branch ? tNameRaw(branch.name, 'ar') : null,
       governorateId: isDelivery ? govId : null,

@@ -85,8 +85,7 @@ async function sendTelegram(text) {
 
 function orderMessage(order, id) {
   const L = [`🥐 *طلب جديد #${shortId(id)}*`];
-  if (order.orderType === 'inside') L.push(`🍽 داخل المخبز — طاولة ${order.tableNumber || '-'}${order.branchName ? ` (${order.branchName})` : ''}`);
-  else if (order.deliveryMethod === 'delivery') { L.push(`🛵 توصيل — ${order.governorateName || ''}`); if (order.address) L.push(`📍 ${order.address}`); }
+  if (order.deliveryMethod === 'delivery') { L.push(`🛵 توصيل — ${order.governorateName || ''}`); if (order.address) L.push(`📍 ${order.address}`); }
   else L.push(`🛍 استلام من الفرع${order.branchName ? ` — ${order.branchName}` : ''}`);
   L.push(`👤 ${order.customerName} — ${order.customerPhone}`);
   L.push(`💳 ${PAY_LABELS[order.paymentMethod] || order.paymentMethod || '-'}${order.paymentRef ? ` — ref: ${order.paymentRef}` : ''}`);

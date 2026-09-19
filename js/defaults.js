@@ -40,8 +40,8 @@ export function defaultGovernorateSettings() {
   return out;
 }
 
-/* scope = مين يشوف طريقة الدفع دي: both = الكل، inside = طلبات جوّه المحل،
-   outside = طلبات برّه (توصيل/استلام). requireProof = العميل لازم يرفع صورة التحويل. */
+/* scope = مين يشوف طريقة الدفع دي: both = الكل، pickup = طلبات الاستلام من الفرع،
+   delivery = طلبات التوصيل. requireProof = العميل لازم يرفع صورة التحويل. */
 export const DEFAULT_PAYMENTS = {
   cod: { enabled: true, scope: 'both' },
   vodafoneCash: { enabled: false, number: '', scope: 'both' },
@@ -51,15 +51,18 @@ export const DEFAULT_PAYMENTS = {
 };
 
 export const PAYMENT_SCOPES = [
-  { id: 'both', ar: 'جوّه وبرّه المحل' },
-  { id: 'inside', ar: 'جوّه المحل بس' },
-  { id: 'outside', ar: 'برّه المحل بس' },
+  { id: 'both', ar: 'الاستلام والتوصيل' },
+  { id: 'pickup', ar: 'الاستلام بس' },
+  { id: 'delivery', ar: 'التوصيل بس' },
 ];
 
-export function paymentInScope(cfg, orderType) {
-  const s = (cfg && cfg.scope) || 'both';
+export function paymentInScope(cfg, deliveryMethod) {
+  let s = (cfg && cfg.scope) || 'both';
+  /* إعدادات قديمة من أيام الطلب جوّه المحل */
+  if (s === 'inside') s = 'pickup';
+  if (s === 'outside') s = 'both';
   if (s === 'both') return true;
-  return s === (orderType === 'inside' ? 'inside' : 'outside');
+  return s === (deliveryMethod === 'delivery' ? 'delivery' : 'pickup');
 }
 
 /* Feature switches controlled from the dashboard (settings/features). */

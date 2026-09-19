@@ -415,7 +415,6 @@ html[dir="rtl"] .ex-eg-drawer{animation-name:drawerInRtl;}
 
 .ex-eg-checkout-form{padding:4px 20px 4px;display:flex;flex-direction:column;gap:4px;}
 .ex-eg-order-type-tabs{display:flex;gap:8px;margin-bottom:14px;}
-.ex-eg-order-type-tabs.ex-eg-sub-tabs{margin-top:10px;margin-bottom:10px;}
 .ex-eg-ot-tab{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;border:1.5px solid var(--border);border-radius:14px;padding:12px 8px;
   background:#fff;font-size:12.5px;font-weight:700;color:var(--text);transition:border-color .2s,background .2s,color .2s,transform .15s var(--ease);

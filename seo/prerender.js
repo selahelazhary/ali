@@ -95,8 +95,8 @@ async function main() {
   const menu = menuRaw || {};
   const defaults = readDefaults();
 
-  const name = ar(menu.name, defaults.name || 'منوعات الرحمان');
-  const nameEn = en(menu.name, defaults.name || 'منوعات الرحمان');
+  const name = ar(menu.name, defaults.name || 'منوعات عباد الرحمان');
+  const nameEn = en(menu.name, defaults.name || 'منوعات عباد الرحمان');
   const cats = (Array.isArray(menu.categories) ? menu.categories : []).filter(Boolean);
   const products = cats.flatMap(c => (Array.isArray(c.products) ? c.products : []).filter(Boolean)
     .map(p => ({ ...p, catAr: ar(c.name), catEn: en(c.name) })));

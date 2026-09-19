@@ -13,7 +13,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
 
 (function () {
   'use strict';
-  let DATA = { name: 'منوعات الرحمان', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4' };
+  let DATA = { name: 'منوعات عباد الرحمان', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4' };
   let SETTINGS = { branches: [], payments: null, governorates: null };
   let FIRST_PRODUCT_ID = null;
   let RATINGS = {};   // { [productId]: { avg, count } }
@@ -51,7 +51,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     if (DATA.surfaceColor) root.setProperty('--surface', DATA.surfaceColor);
     root.setProperty('--primary-soft', mix(DATA.primaryColor || '#0A3A7D', 0.1));
     root.setProperty('--primary-dark', shade(DATA.primaryColor || '#0A3A7D', -0.12));
-    document.title = `${DATA.name || 'منوعات الرحمان'}`;
+    document.title = `${DATA.name || 'منوعات عباد الرحمان'}`;
     state.activeCat = DATA.categories[0] ? DATA.categories[0].id : null;
     state.visibleCategoryCount = 1;
     FIRST_PRODUCT_ID = DATA.categories[0]?.products?.[0]?.id ?? null;
@@ -59,7 +59,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
   }
 
   function updateSearchMetadata() {
-    const storeName = tPlain(DATA.name, DATA.name) || 'منوعات الرحمان';
+    const storeName = tPlain(DATA.name, DATA.name) || 'منوعات عباد الرحمان';
     const description = `${storeName} - تصفح المنتجات المتاحة واطلب بسهولة.`;
     document.title = storeName;
     const descriptionTag = document.querySelector('meta[name="description"]');

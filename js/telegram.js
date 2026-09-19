@@ -89,9 +89,7 @@ function decisionKeyboard(orderId) {
 function formatOrderMessage(order, orderId) {
   const L = [];
   L.push(`🥩 *طلب جديد #${(orderId || '').slice(-6).toUpperCase()}*`);
-  if (order.orderType === 'inside') {
-    L.push(`🍽 داخل المحل — طاولة ${order.tableNumber || '-'}${order.branchName ? ` (${order.branchName})` : ''}`);
-  } else if (order.deliveryMethod === 'delivery') {
+  if (order.deliveryMethod === 'delivery') {
     L.push(`🛵 توصيل — ${order.governorateName || ''}`);
     if (order.address) L.push(`📍 ${order.address}`);
   } else {
@@ -284,11 +282,11 @@ export async function pollTelegramDecisions() {
       if (payload) {
         try {
           await update(ref(db, `subscribers/${payload}`), { telegramChatId: chatId, linked: true, createdAt: Date.now(), lastSeen: Date.now() });
-          await tgCall('sendMessage', { chat_id: chatId, text: '🥩 تمام! إشعارات منوعات الرحمان اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.' });
+          await tgCall('sendMessage', { chat_id: chatId, text: '🥩 تمام! إشعارات منوعات عباد الرحمان اتفعّلت على تليجرام.\nهنبعتلك كل تحديث لطلبك وكل منتج جديد أو خصم.' });
           handled++;
         } catch (e) { /* الاشتراك مش موجود */ }
       } else {
-        await tgCall('sendMessage', { chat_id: chatId, text: `أهلاً بيك في منوعات الرحمان 🥩\nرقم الشات بتاعك: ${chatId}` });
+        await tgCall('sendMessage', { chat_id: chatId, text: `أهلاً بيك في منوعات عباد الرحمان 🥩\nرقم الشات بتاعك: ${chatId}` });
       }
       continue;
     }

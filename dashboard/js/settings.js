@@ -305,7 +305,7 @@ export async function renderFeatures(container) {
       ${fr('f-notif', ICONS.bell, 'الإشعارات للعملاء', 'زرار "فعّل الإشعارات" وصندوق الإشعارات في الموقع', features.notifications)}
       ${fr('f-notif-new', ICONS.star, 'إشعار تلقائي عند إضافة منتج جديد', 'لكل المشتركين، بصورة المنتج', features.notifyNewProducts, true)}
       ${fr('f-notif-disc', ICONS.receipt, 'إشعار تلقائي عند إضافة خصم', 'لكل المشتركين', features.notifyDiscounts, true)}
-      ${fr('f-pwa', ICONS.grid, 'تثبيت الموقع كتطبيق', 'اقتراح تثبيت منوعات الرحمان على شاشة العميل + يشتغل بدون إنترنت', features.pwaInstall)}
+      ${fr('f-pwa', ICONS.grid, 'تثبيت الموقع كتطبيق', 'اقتراح تثبيت منوعات عباد الرحمان على شاشة العميل + يشتغل بدون إنترنت', features.pwaInstall)}
       ${fr('f-cookies', ICONS.cookie, 'شريط ملفات تعريف الارتباط (الكوكيز)', 'إشعار للعميل بالبيانات المحفوظة على جهازه + صفحة تفاصيل', features.cookieBanner !== false)}
       ${fr('f-devbind', ICONS.shield, 'اربط كل حساب أدمن بمتصفح واحد', 'حماية زيادة للموظفين — بس لو مسحت بيانات المتصفح هتحتاج توافق على الجهاز من جديد', features.deviceBinding === true)}
       <button class="ex-eg-btn" id="save-features">${ICONS.check} حفظ</button>

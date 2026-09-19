@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "منوعات الرحمان",
-  "short_name": "منوعات الرحمان",
+  "name": "منوعات عباد الرحمان",
+  "short_name": "منوعات عباد الرحمان",
   "description": "Online freezer — fresh meat & frozen food delivered to your door.",
   "start_url": "./?source=pwa",
   "scope": "./",

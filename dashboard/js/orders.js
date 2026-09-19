@@ -35,7 +35,6 @@ export function renderOrders(container, { profile } = {}) {
     </div>
     <div class="ex-eg-tabs-row" id="type-tabs">
       <button class="ex-eg-tab-pill ex-eg-active" data-type="all">كل الأنواع</button>
-      <button class="ex-eg-tab-pill" data-type="inside">${ICONS.table} داخل المحل</button>
       <button class="ex-eg-tab-pill" data-type="pickup">${ICONS.bag} استلام</button>
       <button class="ex-eg-tab-pill" data-type="delivery">${ICONS.bike} توصيل</button>
     </div>
@@ -125,7 +124,7 @@ export function renderOrders(container, { profile } = {}) {
   // Force a fresh read when opening the section so a stale local cache cannot hide new orders.
   get(ref(db, 'orders')).then(consumeOrders).catch(showReadError);
 
-  function typeOf(o) { return o.orderType === 'inside' ? 'inside' : (o.deliveryMethod === 'delivery' ? 'delivery' : 'pickup'); }
+  function typeOf(o) { return o.deliveryMethod === 'delivery' ? 'delivery' : 'pickup'; }
 
   function renderList() {
     const listEl = container.querySelector('#orders-list');
@@ -144,7 +143,7 @@ export function renderOrders(container, { profile } = {}) {
     }
     if (f.date && f.date !== 'all') orders = orders.filter(o => inDateRange(o.createdAt, f.date, f.day));
     if (f.q) orders = orders.filter(o => matchesText(o, [
-      'customerName', 'customerPhone', 'address', 'notes', 'paymentRef', 'tableNumber',
+      'customerName', 'customerPhone', 'address', 'notes', 'paymentRef',
       'governorateName', 'branchName',
       (x) => (x.id || '').slice(-6).toUpperCase(),
       (x) => (x.items || []).map(i => (i.name && (i.name.ar || i.name.en)) || i.name || ''),
@@ -166,7 +165,7 @@ export function renderOrders(container, { profile } = {}) {
           <div>
             <div class="ex-eg-order-id">#${esc(o.id.slice(-6).toUpperCase())} <span class="ex-eg-badge-status ${statusClass}">${statusLabel(o.status)}</span></div>
             <div class="ex-eg-hint" style="margin-top:4px">
-              ${type === 'inside' ? `${ICONS.table} طاولة ${esc(o.tableNumber) || '-'}` : type === 'delivery' ? `${ICONS.bike} توصيل — ${esc(o.governorateName)}` : `${ICONS.bag} استلام`}
+              ${type === 'delivery' ? `${ICONS.bike} توصيل — ${esc(o.governorateName)}` : `${ICONS.bag} استلام`}
               ${o.branchName ? ` • ${esc(o.branchName)}` : ''} • ${fmtDate(o.createdAt)}
             </div>
             <div class="ex-eg-hint">👤 <b>${esc(o.customerName) || '-'}</b> — <a href="tel:${safeTel(o.customerPhone)}" dir="ltr">${esc(o.customerPhone) || '-'}</a></div>

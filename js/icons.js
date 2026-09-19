@@ -39,7 +39,6 @@ export const ICONS = {
   bell: '<svg viewBox="0 0 24 24" fill="none"><path d="M6 10a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 14 6 10z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 18a2.5 2.5 0 0 0 5 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
   home: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
   storefront: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 9V5h16v4M4 9l1.5 3M4 9h16m0 0 1.5-3M4 9v10a1 1 0 0 0 1 1h4v-6h6v6h4a1 1 0 0 0 1-1V9" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
-  table: '<svg viewBox="0 0 24 24" fill="none"><path d="M3 8h18M5 8v10M19 8v10M3 8l2-4h14l2 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   bike: '<svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="17" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="17" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M6 17 10 8h4l3 5.5M10 8H8m6 0 3 5.5H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   bag: '<svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l1 12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1L6 8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.8"/></svg>',
 

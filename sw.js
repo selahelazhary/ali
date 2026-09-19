@@ -1,6 +1,6 @@
 /* Freezer service worker — offline shell, Web Push delivery, notification clicks.
    Push payloads are sent by the Python worker using VAPID (no FCM). */
-const CACHE = 'bakery-shell-v44';
+const CACHE = 'bakery-shell-v45';
 /* ملاحظة: Hosting شغّال عليه cleanUrls، يعني /index.html بيتحوّل لـ / —
    فبنخزّن الجذر './' بس عشان مانخزّنش رد فيه تحويل. */
 const SHELL = [
@@ -48,6 +48,19 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname.startsWith('/dashboard')) return;
 
   if (e.request.mode === 'navigate') { e.respondWith(handleNavigate(e.request)); return; }
+
+  /* صور المجلد assets مختومة برقم نسخة في الرابط، وHosting بيبعتها immutable.
+     كانت بتتجاب من الشبكة كل زيارة بسبب `cache: 'no-store'` تحت — يعني كل
+     مرة تفتح الموقع بتنزّل الصور من أول وجديد. دلوقتي الكاش الأول: أسرع بكتير
+     على نت ضعيف، والتحديث بيحصل لما رقم النسخة يتغيّر. */
+  if (url.pathname.startsWith('/assets/')) {
+    e.respondWith(caches.match(e.request).then((hit) => hit || fetch(e.request).then((res) => {
+      const copy = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+      return res;
+    })));
+    return;
+  }
 
   e.respondWith(
     fetch(e.request, { cache: 'no-store' }).then(res => {

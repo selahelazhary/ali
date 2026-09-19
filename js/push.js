@@ -31,10 +31,14 @@ export async function registerPushToken(subscriberId, vapidPublicKey) {
 
     const json = sub.toJSON();
     localStorage.setItem('nb_push_endpoint', json.endpoint || '');
+    /* مهم: الزائر مش مسجّل دخول، وقواعد القاعدة بتسمح له يكتب في مفاتيح
+       محدّدة بس جوّه subscribers/{id}. أي مفتاح زيادة بيرفض الكتابة **كلها**
+       (الكتابة ذرّية) — و`tokenUpdatedAt` كان مفتاح زيادة مش مقروء من حد،
+       فكان اشتراك الإشعارات مابيتسجّلش أبداً. */
     await update(ref(db, `subscribers/${subscriberId}`), {
       webPush: { endpoint: json.endpoint, keys: json.keys },
-      tokenUpdatedAt: Date.now(),
-    }).catch(() => {});
+      lastSeen: Date.now(),
+    }).catch((e) => { console.warn('push save failed:', e && e.message); });
     return json.endpoint;
   } catch (e) {
     console.warn('push subscribe failed:', e.message);

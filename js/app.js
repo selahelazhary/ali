@@ -1,6 +1,6 @@
 import { ICONS } from './icons.js';
 import { addToCart, cartCount, openCartDrawer, openMyOrders, getMyOrders, watchMyOrders, syncCartPrices } from './cart.js';
-import { db, ref, push, set as fbSet, onValue, loadMenuFromFirebase, loadPublicSettings, ensureGuest } from './firebase-config.js';
+import { db, ref, push, set as fbSet, onValue, loadMenuFromFirebase, loadPublicSettings } from './firebase-config.js';
 import { activeDiscount, discountedPrice, discountBadge, fmtDateShort } from './pricing.js';
 import { fitStyle, toDirectImageUrl } from './imageUtils.js';
 import { esc, safeUrl, safeTel } from './escape.js';
@@ -1093,9 +1093,11 @@ const LOGO_LAYERS = ['swoosh', 'arc', 'lines', 'cart', 'word1', 'word2', 'rays']
   guardContent();
 
   (async function bootstrap() {
-    /* جلسة زائر من فايربيز — بتخلّي التقييمات والآراء مربوطة بصاحبها فعلاً
-       بدل رقم بيتخترع في المتصفح. بتمشي في الخلفية ومابتأخرش العرض. */
-    ensureGuest().catch(() => {});
+    /* مابنعملش جلسة زائر من فايربيز: الدخول المجهول مقفول في الكونسول،
+       وكل زيارة جديدة كانت بتضيّع طلب فاشل (400) وبتطلع خطأ في الكونسول.
+       ومحتاجينهاش أصلاً — قواعد القاعدة بتسمح للزائر يعمل طلب ويقيّم ويبعت
+       رأيه من غير تسجيل دخول، والتقييم بيتربط برقم ثابت على الجهاز.
+       لو الدخول المجهول اتفتح من الكونسول، رجّع نداء ensureGuest() هنا. */
     const minSplash = new Promise(resolve => setTimeout(resolve, 900));
     /* الهيكل العظمي بيتحط من دلوقتي، فأول ما الاسبلاش يختفي يلاقي المستخدم
        شكل الصفحة قدامه وهي بتحمّل — مش شاشة بيضا. */

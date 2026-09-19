@@ -14,7 +14,7 @@ const ROOT = path.join(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 
 
-const SKIP_DIRS = new Set(['dist', 'node_modules', '.git', '.firebase', 'functions', 'push-worker', 'seo', 'vercel-worker']);
+const SKIP_DIRS = new Set(['dist', 'node_modules', '.git', '.firebase', 'functions', 'push-worker', 'seo', 'vercel-worker', 'monawaat']);
 const SKIP_FILES = new Set(['firebase.json', '.firebaserc', 'build-data.js', 'build-logo.js', 'serve.js', 'source-data.json', 'firebase-seed.json', 'package.json', 'package-lock.json']);
 const SKIP_EXT = new Set(['.md', '.bat', '.ps1', '.sh', '.py', '.log']);
 

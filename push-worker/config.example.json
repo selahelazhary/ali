@@ -1,0 +1,22 @@
+{
+  "pollSeconds": 5,
+  "vapidSubject": "mailto:owner@example.com",
+  "projects": [
+    {
+      "name": "منوعات عباد الرحمان",
+      "databaseUrl": "https://alih-5212b-default-rtdb.firebaseio.com",
+      "apiKey": "AIza...",
+      "email": "worker@example.com",
+      "password": "••••••",
+      "vapid": { "public": "B...", "private": "..." }
+    },
+    {
+      "name": "المحل التاني",
+      "databaseUrl": "https://second-project-default-rtdb.firebaseio.com",
+      "apiKey": "AIza...",
+      "email": "worker2@example.com",
+      "password": "••••••",
+      "vapid": { "public": "B...", "private": "..." }
+    }
+  ]
+}

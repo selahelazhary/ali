@@ -51,8 +51,60 @@ PAY_LABELS = {
 }
 
 
-def log(msg):
-    print(f"[{datetime.now():%H:%M:%S}] {msg}", flush=True)
+def log(msg, tag=""):
+    prefix = f"[{tag}] " if tag else ""
+    print(f"[{datetime.now():%H:%M:%S}] {prefix}{msg}", flush=True)
+
+
+_log = log
+
+# حالة كل المحلات في ملف واحد: { "<databaseUrl>": {orders, broadcasts, started, tgOffset} }
+ALL_STATE = {}
+
+
+def migrate_state(data):
+    """الملف القديم كان لمحل واحد في الجذر — بنحوّله لشكل المحلات."""
+    if not isinstance(data, dict):
+        return {}
+    if isinstance(data.get("stores"), dict):
+        return data["stores"]
+    if "orders" in data or "broadcasts" in data:
+        cfg = load_json(CONFIG, {}) or {}
+        return {str(cfg.get("databaseUrl") or "legacy").rstrip("/"): data}
+    return data
+
+
+def save_state():
+    save_json(STATE, {"stores": ALL_STATE})
+
+
+def start_health_server(stores):
+    """الاستضافات المجانية بتطلب إن البرنامج يسمع على منفذ عشان تعتبره شغال،
+       وبتستخدم نفس الصفحة دي عشان تصحّيه. بتشتغل بس لما PORT يكون موجود."""
+    port = os.environ.get("PORT")
+    if not port:
+        return
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    class Health(BaseHTTPRequestHandler):
+        def do_GET(self):
+            body = json.dumps({
+                "ok": True,
+                "stores": [{"name": st.name, "db": st.key} for st in stores],
+                "at": int(time.time() * 1000),
+            }, ensure_ascii=False).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *args):
+            pass
+
+    threading.Thread(target=HTTPServer(("0.0.0.0", int(port)), Health).serve_forever, daemon=True).start()
+    log(f"صفحة الحالة شغالة على المنفذ {port}")
 
 
 def load_json(path, default):
@@ -71,8 +123,9 @@ def save_json(path, data):
 class Db:
     """Firebase Realtime Database over REST, authenticated as the owner account."""
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, name=""):
         self.cfg = cfg
+        self.name = name
         self.base = cfg["databaseUrl"].rstrip("/")
         self.id_token = None
         self.refresh_token = None
@@ -86,12 +139,12 @@ class Db:
             timeout=20,
         )
         if r.status_code != 200:
-            raise SystemExit("فشل تسجيل الدخول — راجع الإيميل والباسورد في config.json\n" + r.text[:200])
+            raise RuntimeError("فشل تسجيل الدخول — راجع الإيميل والباسورد: " + r.text[:120])
         d = r.json()
         self.id_token = d["idToken"]
         self.refresh_token = d["refreshToken"]
         self.expires_at = time.time() + int(d.get("expiresIn", 3600)) - 120
-        log("تم تسجيل الدخول ✓")
+        log("تم تسجيل الدخول ✓", self.name)
 
     def token(self):
         if time.time() >= self.expires_at:
@@ -124,9 +177,10 @@ class Db:
 
 
 class Notifier:
-    def __init__(self, cfg, db):
+    def __init__(self, cfg, db, name=""):
         self.cfg = cfg
         self.db = db
+        self.name = name
         self.vapid = cfg["vapid"]
 
     # ---------- Web Push ----------
@@ -217,9 +271,7 @@ class Notifier:
 def order_text(order, oid):
     name = lambda o: (o or {}).get("ar") or (o or {}).get("en") or "" if isinstance(o, dict) else (o or "")
     lines = [f"🥩 *طلب جديد #{oid[-6:].upper()}*"]
-    if order.get("orderType") == "inside":
-        lines.append(f"🍽 داخل المحل — طاولة {order.get('tableNumber') or '-'}")
-    elif order.get("deliveryMethod") == "delivery":
+    if order.get("deliveryMethod") == "delivery":
         lines.append(f"🛵 توصيل — {order.get('governorateName') or ''}")
         if order.get("address"):
             lines.append(f"📍 {order['address']}")
@@ -379,39 +431,49 @@ def _clear_buttons(notifier, cq, label):
     })
 
 
-def main():
-    cfg = load_json(CONFIG, None)
-    if not cfg:
-        raise SystemExit("مفيش config.json — نزّله من اللوحة: الأدمن ← وركر الإشعارات، وحطه جنب worker.py")
+class Store:
+    """محل واحد = مشروع فايربيز واحد. الوركر بيشغّل أكتر من واحد مع بعض."""
 
-    db = Db(cfg)
-    notifier = Notifier(cfg, db)
-    state = load_json(STATE, {"orders": {}, "broadcasts": [], "started": time.time() * 1000})
+    def __init__(self, cfg, name):
+        self.cfg = cfg
+        self.name = name
+        self.key = str(cfg.get("databaseUrl") or name).rstrip("/")
+        self.db = Db(cfg, name)
+        self.notifier = Notifier(cfg, self.db, name)
+        self.state = ALL_STATE.setdefault(self.key, {})
+        self.state.setdefault("orders", {})
+        self.state.setdefault("broadcasts", [])
+        self.state.setdefault("started", time.time() * 1000)
+        self.last_beat = 0
+        self.drive = None
 
-    # publish the public key so the site can subscribe browsers to push
-    features = db.get("settings/features") or {}
-    if features.get("vapidPublicKey") != cfg["vapid"]["public"]:
-        db.patch("settings/features", {"vapidPublicKey": cfg["vapid"]["public"], "pythonWorker": True})
-        log("اتحط المفتاح العام في إعدادات الموقع ✓")
+    def setup(self):
+        """أول تشغيل: ننشر المفتاح العام ونتجاهل ضغطات أزرار البوت القديمة."""
+        cfg, db, notifier, state = self.cfg, self.db, self.notifier, self.state
+        features = db.get("settings/features") or {}
+        if features.get("vapidPublicKey") != cfg["vapid"]["public"]:
+            db.patch("settings/features", {"vapidPublicKey": cfg["vapid"]["public"], "pythonWorker": True})
+            log("اتحط المفتاح العام في إعدادات الموقع ✓", self.name)
+        if "tgOffset" not in state:
+            drain = notifier.tg_call("getUpdates", {"offset": -1, "timeout": 0})
+            result = (drain or {}).get("result") or []
+            state["tgOffset"] = result[-1]["update_id"] + 1 if result else 0
+        if (cfg.get("drive") or {}).get("enabled"):
+            try:
+                from drive_upload import DriveUploader
+                self.drive = DriveUploader(HERE, cfg["drive"].get("folderName", "Freezer Images"))
+                log("رفع الصور على Drive مفعّل ✓", self.name)
+            except Exception as e:
+                log(f"Drive متوقف: {e}", self.name)
 
-    # أول تشغيل: تجاهل ضغطات الأزرار القديمة المتراكمة
-    if "tgOffset" not in state:
-        drain = notifier.tg_call("getUpdates", {"offset": -1, "timeout": 0})
-        result = (drain or {}).get("result") or []
-        state["tgOffset"] = result[-1]["update_id"] + 1 if result else 0
+    def tick(self):
+        """دورة واحدة على المحل ده — نفس شغل الحلقة القديمة بالظبط."""
+        cfg, db, notifier, state, drive = self.cfg, self.db, self.notifier, self.state, self.drive
+        last_beat = self.last_beat
 
-    log("الوركر شغال — بيراقب الطلبات والإشعارات. (Ctrl+C للإيقاف)")
-    last_beat = 0
-    drive = None
-    if (cfg.get("drive") or {}).get("enabled"):
-        try:
-            from drive_upload import DriveUploader
-            drive = DriveUploader(HERE, cfg["drive"].get("folderName", "Freezer Images"))
-            log("رفع الصور على Drive مفعّل ✓")
-        except Exception as e:
-            log(f"Drive متوقف: {e}")
+        def log(msg, _n=self.name):      # كل سطر بيتعلّم باسم المحل
+            _log(msg, _n)
 
-    while True:
         try:
             # نبضة كل 30 ثانية: اللوحة بتعرف منها إن الوركر شغال فمش بتزاحمه على أزرار البوت
             if time.time() - last_beat > 30:
@@ -513,13 +575,93 @@ def main():
                         db.patch(f"uploads/{uid}", {"status": "error", "error": str(e)[:200]})
                         log(f"فشل رفع صورة: {e}")
 
-            save_json(STATE, state)
+            save_state()
         except KeyboardInterrupt:
             raise
         except Exception:
             log("خطأ غير متوقع:")
             traceback.print_exc()
-        time.sleep(max(2, int(cfg.get("pollSeconds", 5))))
+        self.last_beat = last_beat
+
+
+def load_stores():
+    """الإعدادات بتقبل شكلين:
+       • القديم: مشروع واحد في الجذر {email, password, databaseUrl, apiKey, vapid, ...}
+       • الجديد: {"pollSeconds": 5, "projects": [{"name": "...", ...}, ...]}
+       وأي مفتاح في الجذر بيتورّث لكل المشاريع (زي vapidSubject).
+       ولو متغيّر البيئة WORKER_CONFIG موجود بنقرا منه بدل الملف — للاستضافة."""
+    raw = os.environ.get("WORKER_CONFIG")
+    cfg = json.loads(raw) if raw else load_json(CONFIG, None)
+    if not cfg:
+        raise SystemExit("مفيش config.json — نزّله من اللوحة: الأدمن ← وركر الإشعارات، وحطه جنب worker.py")
+    projects = cfg.get("projects") or [dict(cfg, name=cfg.get("name") or "المحل")]
+    shared = {k: v for k, v in cfg.items() if k != "projects"}
+    out = []
+    for n, p in enumerate(projects):
+        merged = dict(shared)
+        merged.update(p)
+        merged.pop("projects", None)
+        label = merged.get("name") or f"محل {n + 1}"
+        missing = [k for k in ("email", "password", "databaseUrl", "apiKey", "vapid") if not merged.get(k)]
+        if missing:
+            log(f"اتخطّى — ناقص: {', '.join(missing)}", label)
+            continue
+        out.append((merged, label))
+    if not out:
+        raise SystemExit("مفيش مشروع كامل البيانات في الإعدادات.")
+    return cfg, out
+
+
+def main():
+    while True:
+        try:
+            run()
+            return
+        except Retry as e:
+            log(str(e))
+            time.sleep(60)
+
+
+class Retry(Exception):
+    """مفيش محل شغال دلوقتي — على الاستضافة بنستنى ونجرّب تاني بدل ما نقفل."""
+
+
+def run():
+    global ALL_STATE
+    ALL_STATE = migrate_state(load_json(STATE, {}))
+    cfg, projects = load_stores()
+
+    stores = []
+    # بنفتح صفحة الحالة من دلوقتي (قبل تسجيل الدخول) عشان الاستضافة تشوف
+    # إن البرنامج شغال حتى لو محل اتأخر أو فشل — القايمة بتتملي بعد كده.
+    start_health_server(stores)
+    for pcfg, label in projects:
+        try:
+            store = Store(pcfg, label)
+            store.setup()
+            stores.append(store)
+            log("جاهز ✓", label)
+        except Exception as e:
+            log(f"مقدرش يشتغل: {str(e).splitlines()[0]}", label)
+    if not stores:
+        if os.environ.get("PORT"):
+            raise Retry("مفيش ولا محل قدر يشتغل — مستني ٦٠ ثانية ونجرّب تاني.")
+        raise SystemExit("مفيش ولا محل قدر يشتغل — راجع البيانات.")
+
+    log(f"الوركر شغال على {len(stores)} محل: " + "، ".join(s.name for s in stores) + ". (Ctrl+C للإيقاف)")
+
+    poll = max(2, int(cfg.get("pollSeconds", 5)))
+    while True:
+        for store in stores:
+            try:
+                store.tick()
+            except KeyboardInterrupt:
+                raise
+            except Exception:
+                log("خطأ غير متوقع:", store.name)
+                traceback.print_exc()
+        save_state()
+        time.sleep(poll)
 
 
 if __name__ == "__main__":

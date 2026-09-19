@@ -1,0 +1,23 @@
+# نشر وركر الإشعارات على Render (الخطة المجانية) — من غير Firebase Blaze.
+#
+# الخطوات:
+#   1) ارفع المشروع على GitHub (الريبو موجود: selahelazhary/ali)
+#   2) Render → New → Blueprint → اختار الريبو
+#   3) في Environment حط المتغيّر WORKER_CONFIG = محتوى config.json كامل
+#      (بصيغة المشاريع المتعددة — شوف config.example.json)
+#   4) خلّي حاجة تفتح رابط الخدمة كل ١٠ دقايق (cron-job.org مجاني) عشان
+#      الخطة المجانية مابتنوّمش الخدمة.
+services:
+  - type: web
+    name: monawaat-worker
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r push-worker/requirements.txt
+    startCommand: python push-worker/worker.py
+    healthCheckPath: /
+    envVars:
+      - key: WORKER_CONFIG
+        sync: false          # بتتحط يدوي من لوحة Render — مش في الكود
+      - key: PYTHONUNBUFFERED
+        value: "1"

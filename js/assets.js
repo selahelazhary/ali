@@ -127,7 +127,13 @@ async function paint(el) {
   if (!id || el.dataset.assetDone) return;
   el.dataset.assetDone = '1';
   const url = await getAsset(id);
-  if (!url) return;
+  /* الصورة اتمسحت من المخزن (إشارة معلّقة في المنيو) — بنبلّغ اللي فوقها
+     عشان يخفي مكانها بدل ما يسيب مربع فاضي كبير في الصفحة. */
+  if (!url) {
+    el.dataset.assetMissing = '1';
+    el.dispatchEvent(new CustomEvent('asset-missing', { bubbles: true }));
+    return;
+  }
   if (el.dataset.assetBg) el.style.backgroundImage = `url('${url}')`;
   else el.src = url;
 }

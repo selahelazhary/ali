@@ -1,13 +1,17 @@
 /* Freezer service worker — offline shell, Web Push delivery, notification clicks.
    Push payloads are sent by the Python worker using VAPID (no FCM). */
-const CACHE = 'bakery-shell-v43';
+const CACHE = 'bakery-shell-v44';
 /* ملاحظة: Hosting شغّال عليه cleanUrls، يعني /index.html بيتحوّل لـ / —
    فبنخزّن الجذر './' بس عشان مانخزّنش رد فيه تحويل. */
 const SHELL = [
   './', './css/style.css',
   './js/app.js', './js/cart.js', './js/icons.js', './js/defaults.js', './js/pricing.js', './js/imageUtils.js',
   './js/telegram.js', './js/firebase-config.js', './js/data.js', './js/notify.js', './js/push.js', './js/cookies.js', './js/escape.js', './js/assets.js', './js/ratings.js',
-  './assets/logo.png', './manifest.webmanifest',
+  './assets/logo.png?v=5', './manifest.webmanifest',
+  /* طبقات اللوجو المتحرك في الصفحة الرئيسية */
+  './assets/logo-swoosh.png?v=5', './assets/logo-arc.png?v=5', './assets/logo-lines.png?v=5',
+  './assets/logo-cart.png?v=5', './assets/logo-word1.png?v=5', './assets/logo-word2.png?v=5',
+  './assets/logo-rays.png?v=5',
 ];
 
 self.addEventListener('install', (e) => {

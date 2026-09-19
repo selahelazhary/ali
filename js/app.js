@@ -11,9 +11,13 @@ import { openOrderTracking } from './cart.js';
 import { setupCookieConsent, openCookiePolicy } from './cookies.js';
 import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.js';
 
+/* طبقات اللوجو الافتراضي — كل واحدة ملف لوحده على نفس المقاس عشان يركّبوا فوق
+   بعض بالظبط، وكل طبقة تظهر بأنميشن مستقل. الترتيب هنا = ترتيب الظهور. */
+const LOGO_LAYERS = ['swoosh', 'arc', 'lines', 'cart', 'word1', 'word2', 'rays'];
+
 (function () {
   'use strict';
-  let DATA = { name: 'منوعات عباد الرحمان', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4' };
+  let DATA = { name: 'منوعات عباد الرحمان', categories: [], currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=5' };
   let SETTINGS = { branches: [], payments: null, governorates: null };
   let FIRST_PRODUCT_ID = null;
   let RATINGS = {};   // { [productId]: { avg, count } }
@@ -30,8 +34,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
   };
 
   function applyData(d) {
-    /* طبقتي اللوجو (العربة/النص) ملفات ثابتة في الموقع مش في القاعدة */
-    if (d) DATA = Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4', logoCart: 'assets/logo-cart.png?v=1', logoText: 'assets/logo-text.png?v=1' }, d);
+    if (d) DATA = Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=5' }, d);
     /* تطبيع الأقسام:
        - قسم من غير id بيكسر التبويبات والقائمة ⇒ نديله رقم ثابت حسب ترتيبه.
        - فايربيز بيشيل المصفوفات الفاضية، فقسم لسه مفيهوش منتجات بيرجع من
@@ -237,7 +240,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     const bgHasLogo = bg && DATA.homeBgHasLogo !== false;
     /* اللوجو الرسمي بيتعرض طبقتين: العربة بتدخل من جنب الشاشة وتستقر فوق النص.
        بيشتغل بس مع لوجو الموقع الافتراضي — لو المالك غيّر اللوجو من اللوحة بنرجع لصورة واحدة. */
-    const splitLogo = !!(DATA.logoCart && DATA.logoText && (!DATA.logo || /^assets\/logo\.png(\?|$)/.test(String(DATA.logo))));
+    const splitLogo = !DATA.logo || /^assets\/logo\.png(\?|$)/.test(String(DATA.logo));
     return `
       <div class="ex-eg-home ${bg ? 'ex-eg-has-bg' : ''} ${animateImage ? 'ex-eg-bg-animated' : ''}" ${stillBg && !animateImage ? `style="background-image:url('${stillBg}')"` : ''}>
         ${showVideo ? `<video class="ex-eg-home-video" autoplay muted loop playsinline preload="auto" poster="${poster}" aria-hidden="true" tabindex="-1"><source src="${bg}" type="video/${/\.webm/i.test(bgRaw) ? 'webm' : 'mp4'}"></video>` : ''}
@@ -255,10 +258,9 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
         <div class="ex-eg-logo-wrap">
             ${splitLogo ? `
             <div class="ex-eg-logo-stack" role="img" aria-label="${t(DATA.name, DATA.name)}">
-              <img class="ex-eg-logo-text" src="${safeUrl(DATA.logoText)}" alt="" decoding="async">
-              <img class="ex-eg-logo-cart" src="${safeUrl(DATA.logoCart)}" alt="" decoding="async">
+              ${LOGO_LAYERS.map(n => `<img class="ex-eg-ll ex-eg-l-${n}" src="assets/logo-${n}.png?v=5" alt="" decoding="async">`).join('')}
             </div>` : `
-            <img ${imgSrc(DATA.logo, 'assets/logo.png?v=4')} alt="${t(DATA.name, DATA.name)}">`}
+            <img ${imgSrc(DATA.logo, 'assets/logo.png?v=5')} alt="${t(DATA.name, DATA.name)}">`}
           ${DATA.isRestaurantNameDisplayedOnHomePage ? `<div class="ex-eg-restaurant-name">${t(DATA.name, DATA.name)}</div>` : ''}
         </div>`}
         <button class="ex-eg-main-menu-btn ex-eg-pressable" id="go-menu">${T.menu}</button>
@@ -395,7 +397,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
           <div class="ex-eg-menu-loading-head"><h2>${T.title}</h2><p>${T.sub}</p></div>
           <div class="ex-eg-skeleton-grid ex-eg-menu-skeleton-grid">${skeletonCards}</div>
         ` : `
-          <img src="${DATA.logo || 'assets/logo.png?v=4'}" alt="">
+          <img src="${DATA.logo || 'assets/logo.png?v=5'}" alt="">
           <h2>${T.title}</h2>
           <p>${T.sub}</p>
         `}
@@ -410,6 +412,18 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     clearInterval(carouselTimer);
     const car = document.getElementById('banner-carousel');
     if (!car) return;
+    /* بانر إشارته معلّقة (الصورة اتمسحت من المخزن) كان بيسيب مستطيل رمادي
+       فاضي فوق المنيو — بنشيله، ولو مبقاش في بانر سليم بنخفي الشريط كله. */
+    car.addEventListener('asset-missing', (e) => {
+      const slide = e.target.closest('.ex-eg-banner-slide');
+      if (!slide) return;
+      const idx = slide.dataset.i;
+      slide.remove();
+      const dot = car.querySelector(`.ex-eg-dot[data-i="${idx}"]`);
+      if (dot) dot.remove();
+      if (!car.querySelector('.ex-eg-banner-slide')) { car.remove(); return; }
+      if (!car.querySelector('.ex-eg-banner-slide.ex-eg-active')) car.querySelector('.ex-eg-banner-slide').classList.add('ex-eg-active');
+    });
     const slides = [...car.querySelectorAll('.ex-eg-banner-slide')];
     const dots = [...car.querySelectorAll('.ex-eg-dot')];
     if (slides.length < 2) return;
@@ -798,7 +812,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
       : { settings: 'Settings', lang: 'Language', notif: 'Notifications', inbox: 'Open inbox' };
     overlay.innerHTML = `
       <div class="ex-eg-drawer">
-        <div class="ex-eg-drawer-logo"><img ${imgSrc(DATA.logo, 'assets/logo.png?v=4')} alt="${t(DATA.name, DATA.name)}"></div>
+        <div class="ex-eg-drawer-logo"><img ${imgSrc(DATA.logo, 'assets/logo.png?v=5')} alt="${t(DATA.name, DATA.name)}"></div>
         <h3>${state.lang === 'ar' ? 'الأقسام' : 'Categories'}</h3>
         <ul>
           ${DATA.categories.map(c => `
@@ -1098,7 +1112,7 @@ import { loadAllRatings, watchRatings, myRating, rateProduct } from './ratings.j
     onValue(ref(db, 'menu'), (snap) => {
       if (!snap.exists()) return;
       if (!menuSyncedOnce) { menuSyncedOnce = true; syncCartPrices(snap.val(), (p, v) => discountedPrice(v.price, activeDiscount(p))); return; }
-      applyData(Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=4' }, snap.val()));
+      applyData(Object.assign({ currencyCode: 'EGP', fallbackProductImage: 'assets/logo.png?v=5' }, snap.val()));
       syncCartPrices(DATA, (p, v) => discountedPrice(v.price, activeDiscount(p)));
       // مانقطعش على العميل وهو بيكمّل طلب
       if (!document.querySelector('.cart-overlay')) render();
